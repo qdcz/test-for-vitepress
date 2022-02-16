@@ -12,7 +12,8 @@ module.exports = {
         sidebar: {
             '/client/': [
                 { text: 'html', link: '/client/html' },
-                { text: 'css', link: '/client/css' }
+                { text: 'css', link: '/client/css' },
+                { text: 'javaScript', link: '/client/javaScript' }
             ],
             '/test02/': [
                 { text: 'tt03', link: '/test02/index' },
