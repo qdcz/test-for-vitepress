@@ -119,6 +119,12 @@ const COLOR_BLUE = '#0F0';
 
 JavaScript 中的字符串必须被括在引号里。
 
+文本数据被以字符串形式存储，单个字符没有单独的类型
+
+::: tip 注意
+字符串的内部格式始终是 [UTF-16](https://en.wikipedia.org/wiki/UTF-16)，它不依赖于页面编码。 
+:::
+
 ```js
 let name = 'cxy';
 let age = "18";
@@ -185,7 +191,7 @@ console.log( 'Interface'.toLowerCase() ); // interface
 
 ##### str.indexof
 
-str.indexOf(substr, pos)。
+`str.indexOf(substr, pos)`
 从给定位置 `pos` 开始，在 `str` 中查找 `substr`，如果没有找到，则返回 `-1`，否则返回匹配成功的位置 
 
 ```js
@@ -259,10 +265,89 @@ if (~str.indexOf("Widget")) {
 
 #### 获取字符串
 
+#####   **substr** 
+
+` str.substr(start [, length])`
+
+返回字符串从 `start` 开始的给定 `length` 的部分。
+
+与以前的方法相比，这个允许我们指定 `length` 而不是结束位置：
+
+```js
+let str = "stringify";
+console.log( str.substr(2, 4) ); // 'ring'，从位置 2 开始，获取 4 个字符
+console.log( str.substr(-4, 2) ); // 'gi'，从第 4 位获取 2 个字符
+```
+
 #####  substring 
 
-#####  substr
+`str.substring(start [, end])`
+
+返回字符串在 `start` 和 `end` **之间** 的部分。
+
+这与 `slice` 几乎相同，但它允许 `start` 大于 `end`。
+
+```js
+let str = "stringify";
+// 这些对于 substring 是相同的
+console.log( str.substring(2, 6) ); // "ring"
+console.log( str.substring(6, 2) ); // "ring"
+
+// ……但对 slice 是不同的：
+console.log( str.slice(2, 6) ); // "ring"（一样）
+console.log( str.slice(6, 2) ); // ""（空字符串）
+```
+
+
 
 #####  slice 
 
+` str.slice(start [, end])`
+
+ 返回字符串从 `start` 到（但不包括）`end` 的部分。 
+
+```js
+let str = "stringify";
+console.log( str.slice(0, 5) ); // 'strin'，从 0 到 5 的子字符串（不包括 5）
+console.log( str.slice(0, 1) ); // 's'，从 0 到 1，但不包括 1，所以只有在 0 处的字符
+console.log( str.slice(2) ); // 从第二个位置直到结束
+console.log( str.slice(-4, -1) ); // 'gif'
+```
+
+
+
 #### 比较字符串
+
+##### codePointAt
+
+ `str.codePointAt(pos)`
+
+返回在pos位置的字符代码
+
+```js
+// 不同的字母有不同的代码
+console.log( "z".codePointAt(0) ); // 122
+console.log( "Z".codePointAt(0) ); // 90
+```
+
+#####  fromCodePoint
+
+ 通过数字 `code` 创建字符 
+
+```js
+String.fromCodePoint(90) // Z
+```
+
+ 还可以用 `\u` 后跟十六进制代码，通过这些代码添加 Unicode 字符： 
+
+```js
+// 在十六进制系统中 90 为 5a
+alert( '\u005a' ); // Z
+```
+
+## Number
+
+在现代 JavaScript 中，数字（number）有两种类型：
+
+1. JavaScript 中的常规数字以 64 位的格式 [IEEE-754](https://en.wikipedia.org/wiki/IEEE_754-2008_revision) 存储，也被称为“双精度浮点数”。这是我们大多数时候所使用的数字，我们将在本章中学习它们。
+2. BigInt 数字，用于表示任意长度的整数。有时会需要它们，因为常规数字不能安全地超过 `253` 或小于 `-253`。由于仅在少数特殊领域才会用到 BigInt，因此我们在特殊的章节 [BigInt](https://zh.javascript.info/bigint) 中对其进行了介绍。
