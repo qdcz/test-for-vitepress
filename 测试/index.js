@@ -2,6 +2,17 @@
  * @param {Stage} stage
  */
 module.exports = (stage) => {
+
+  let sty = document.createElement('style');
+  sty.type = 'text/css';
+  sty.innerHTML = `
+  	::-webkit-scrollbar {
+  		display: none;
+  	}
+  `
+  document.head.appendChild(sty)
+
+
   stage.get('tab-list_dYo4t').on("handleClick", () => {
     console.log("这个组件有毒，初始化默认会执行一次1111111111111111111111111111")
   })
@@ -103,8 +114,16 @@ module.exports = (stage) => {
       "生产调度模块": "宁波",
       "引航/拖轮作业模块": "宁波"
     },
+    times:{  // 定时器
+      "日集装箱量":null
+    },
 
 
+    module_hxzb: {   // 核心指标模块变量
+      "日集装箱量数值缓存": '',
+      "月集装箱量数值缓存": '',
+      "年集装箱量数值缓存": '',
+    },
     module_jcgyit: {   // 进出港模块变量
       "enterOut": ''  // 进、出    航门的进、出状态记录
     },
@@ -194,6 +213,7 @@ module.exports = (stage) => {
         times,
         params,
         filters,
+        renderAfter,
         connectComList
       } = options;
       if (apiName != undefined) {
@@ -204,8 +224,12 @@ module.exports = (stage) => {
             // 过滤器是否存在且是一个函数
             let flag = filters && Object.prototype.toString.call(filters) ===
               '[object Function]';
+            let flag_renderAfter = renderAfter && Object.prototype.toString.call(renderAfter) ===
+              '[object Function]';
+
             // stage.get(baseObj.id).render(this.renderTypeList[baseObj.type](flag ? filters(res) : res));
             stage.get(baseObj.id).render(flag ? filters.call(this, res) : res);
+            flag_renderAfter ? renderAfter.call(this) : ""
             // 关联组件列表需要是一个数组
             if (Object.prototype.toString.call(connectComList) == '[object Array]' &&
               connectComList.length > 0) {
@@ -214,6 +238,9 @@ module.exports = (stage) => {
                 if (!stage.get(connectComObj.id)) return console.error("绑定关联组件失败源:", baseObj.name, "关联组件:", name);
                 flag = connectComObj.data.filters && Object.prototype.toString.call(connectComObj.data.filters) === '[object Function]';
                 stage.get(connectComObj.id).render(flag ? connectComObj.data.filters.call(this, res) : res);
+
+                flag_renderAfter = connectComObj.data.renderAfter && Object.prototype.toString.call(connectComObj.data.renderAfter) === '[object Function]';
+                flag_renderAfter ? connectComObj.data.renderAfter.call(this) : ""
               })
             } else {
               // return console.error("关联组件列表必须是数组且要有值！！！", connectComList);
@@ -245,12 +272,17 @@ module.exports = (stage) => {
       }
       let {
         data,
-        filters
+        filters,
+        renderAfter
       } = options;
       if (data != undefined) {
         // 数据过滤器存在
         let flag = filters && Object.prototype.toString.call(filters) === '[object Function]';
         stage.get(baseObj.id).render(flag ? filters.call(this, data) : data)
+
+        // 渲染后的函数调用
+        let flag_renderAfter = renderAfter && Object.prototype.toString.call(renderAfter) === '[object Function]';
+        flag_renderAfter ? renderAfter.call(this) : ""
       }
     }
     /**
@@ -387,13 +419,14 @@ module.exports = (stage) => {
                     id: this.ComList[i].id,
                     type: this.ComList[i].type,
                   }, {
-                      apiName: dataObjectValue || undefined,
-                      times: this.ComList[i].data['times'] || undefined,
-                      params: this.ComList[i].data['params'] || undefined,
-                      filters: this.ComList[i].data['filters'] || undefined,
-                      connectComList: this.ComList[i].data['connectComList'] ||
-                        undefined,
-                    });
+                    apiName: dataObjectValue || undefined,
+                    times: this.ComList[i].data['times'] || undefined,
+                    params: this.ComList[i].data['params'] || undefined,
+                    filters: this.ComList[i].data['filters'] || undefined,
+                    renderAfter: this.ComList[i].data['renderAfter'] || undefined,
+                    connectComList: this.ComList[i].data['connectComList'] ||
+                      undefined,
+                  });
                   break;
                 case "staticData":
                   if (this.ComList[i].data['api']) {
@@ -404,8 +437,8 @@ module.exports = (stage) => {
                     id: this.ComList[i].id,
                     type: this.ComList[i].type,
                   }, {
-                      data: this.ComList[i].data['staticData'] || undefined
-                    });
+                    data: this.ComList[i].data['staticData'] || undefined
+                  });
                   break;
               }
             }
@@ -429,13 +462,14 @@ module.exports = (stage) => {
                   id: this.ComList[i].id,
                   type: this.ComList[i].type,
                 }, {
-                    apiName: apiName || undefined,
-                    times: this.ComList[i].data['times'] || undefined,   		// 重写times 有更复杂的后面补上
-                    params: params || undefined,
-                    filters: this.ComList[i].data['filters'] || undefined,  	// 重写filters 有更复杂的后面补上
-                    connectComList: this.ComList[i].data['connectComList'] || 	// 重写关联组件列表 有更复杂的后面补上
-                      undefined,
-                  });
+                  apiName: apiName || undefined,
+                  times: this.ComList[i].data['times'] || undefined,   		// 重写times 有更复杂的后面补上
+                  params: params || undefined,
+                  filters: this.ComList[i].data['filters'] || undefined,  	// 重写filters 有更复杂的后面补上
+                  renderAfter: this.ComList[i].data['renderAfter'] || undefined,
+                  connectComList: this.ComList[i].data['connectComList'] || 	// 重写关联组件列表 有更复杂的后面补上
+                    undefined,
+                });
                 fn.call(this, apiName, params, callback)
               }
             }
@@ -1236,6 +1270,18 @@ module.exports = (stage) => {
           id: "@Snxun_datav_sn-cp-number-step_r1jeH", type: "翻牌器", data: {
             filters: function (res) { // 过滤器
               try {
+                this.Store.module_hxzb['日集装箱量数值缓存'] = Number(res.data.rows[0].containerThroughputDay) + Number(res.data.rows[0].containerThroughputDayZs);
+                let fn = ()=>{
+                  this.Store.module_hxzb['日集装箱量数值缓存'] += Math.floor((Math.random()*3)+1);
+                  console.log("==========",this.Store.module_hxzb['日集装箱量数值缓存'])
+                  stage.get("number-title-flop_fMIpH").render([{value:this.Store.module_hxzb['日集装箱量数值缓存']}])
+                }
+                fn();
+                if(this.Store.times['日集装箱量']){
+                  clearInterval(this.Store.times['日集装箱量'])
+                  this.Store.times['日集装箱量'] = null
+                }
+                this.Store.times['日集装箱量'] = setInterval(fn,3000)
                 return [{ value: Number(res.data.rows[0].containerThroughputDay) + Number(res.data.rows[0].containerThroughputDayZs) }]
               } catch (e) {
                 console.log("Gettwljzxdbsdbsc接口错误", e)
@@ -1841,21 +1887,6 @@ module.exports = (stage) => {
           //   }
           // }
         },
-        // "在港重点物资运输模块-当年重点运输船舶列表": {
-        //   id: "carousel-table_rgDby", type: "轮播列表",
-        //   data: {
-        //     api: "getZgzdwzyslb", // 接口地址
-        //     times: 1000 * 60 * 2,
-        //     filters: function (res) { // 过滤器
-        //       try {
-        //         return res.data.rows
-        //       } catch (e) {
-        //         console.log("getZgzdwzyslb接口错误", e)
-        //       }
-        //     },
-        //   },
-        //   event: { rowClickedName: "zgzdwzys_ShipLoopList" }
-        // },
         "在港重点物资运输模块-当年重点运输船舶列表": {
           id: "carousel-table_pkIU3", type: "轮播列表",
           data: {
@@ -1891,6 +1922,7 @@ module.exports = (stage) => {
                 let seaRouteConfig = { 1: "虾峙门", 2: "条帚门", 3: "双屿门", 4: "西猴门", 5: "金塘大桥", 6: "青龙门" }
                 let dataSourceConfig = { 1: "宁波港调度", 2: "舟山引航站", 3: "外网申请", 4: "舟山港务局" }
                 let eventStatusConfig = { 4: "正常", 6: "待定" }
+
                 return res.data.rows.map(i => {
                   let str = ''
                   if (i.towBoatInfoJsons) {
@@ -1911,10 +1943,19 @@ module.exports = (stage) => {
                   i.__towBoatInfoJsons = str ? str.slice(0, -1) : "-";
                   i.__eventStatus = eventStatusConfig[i.eventStatus];
                   return i
-                }).slice(0, 100)
+                }).sort((a, b) => a.arrangeLineTime - b.arrangeLineTime)
               } catch (e) {
                 console.log("getEnterOuterShipList接口错误", e)
               }
+            },
+            renderAfter: function () {
+              // let test = setTimeout(()=>{
+              //   console.log("renderAfter回调")
+              //   let dom = stage.get("carousel-table_x9UBq").container[0].childNodes[2]
+              //   dom.style.overflow="scroll";
+              //   clearTimeout(test)
+              //   test = null;
+              // },800)
             }
           },
           event: { rowClickedName: "jcgmk_jcgcbxxxx" }
@@ -2114,15 +2155,74 @@ module.exports = (stage) => {
         /**
          * ===地图相关组件===
          */
-        "基础平面地图": { id: "datavmap-canvas2d_J1JdM", type: "地图" },
-        "基础平面地图-锚地动态-所有锚地": { id: "datavmap-canvas2d-area_ag9RA", type: "区域热力层", event: { clickName: "mapClickRoadstead" } },
+        "基础平面地图": { id: "datav-2dmap_Cuu2u", type: "地图" },
+        "基础平面地图-锚地动态-所有锚地": {
+            logCom:true,
+            id: "datav-2dmap-area_4o3kS", type: "区域热力层", event: { clickName: "mapClickRoadstead" },
+          data: {
+            api: "getmdsj", // 接口地址
+            times: 1000 * 60 * 60 * 24,
+            params: { dateTimeDt: getCurrentDate() },
+            filters: function (res) { // 过滤器
+              try {
+                let data = res.data.rows;
+                let Arr = data.reduce((T, C, I) => {
+                  if (C.geom) {
+                    let arr = [];
+                    if (C.geom.indexOf("MULTIPOLYGON(((") != -1) {
+                      arr = this.filter_MULTIPOLYGON(C.geom)
+                    } else if (C.geom.indexOf("POLYGON((") != -1) {
+                      arr = this.filter_POLYGON(C.geom)
+                    }
+                    T.push({
+                      "type": "Feature",
+                      "properties": {
+                        "name": C.elementNameCn,
+                        "areaId": C.id
+                      },
+                      "geometry": {
+                        "type": "MultiPolygon",
+                        "coordinates": [arr]
+                      }
+                    })
+                  }
+                  return T
+                }, []);
+                
+                stage.get('datav-2dmap-area_4o3kS').setGeojson({
+                  "type": "FeatureCollection",
+                  "name": "所有锚地面",
+                  "crs": {
+                    "type": "name",
+                    "properties": {
+                      "name": "urn:ogc:def:crs:OGC:1.3:CRS84"
+                    }
+                  },
+                  "features": Arr
+                });
+                stage.get('datav-2dmap-area_4o3kS').render({
+                  "type": "FeatureCollection",
+                  "name": "所有锚地面",
+                  "crs": {
+                    "type": "name",
+                    "properties": {
+                      "name": "urn:ogc:def:crs:OGC:1.3:CRS84"
+                    }
+                  },
+                  "features": Arr
+                });
+              } catch (e) {
+                console.log("getmdsj接口错误", e)
+              }
+            }
+          }
+        },
         // "基础平面地图-锚地动态-船舶点位": { id: "datavmap-canvas2d-scatter-image_BLWC1", type: "图标散点层", event: { clickName: "mapClickRoadstead_Ship" } },
-        "基础平面地图-通用-码头点位": { id: "datavmap-canvas2d-scatter-vector_7TwB3", type: "矢量散点层" },
-        "基础平面地图-商船点位": { id: "datavmap-canvas2d-scatter-vector_dbLol", type: "矢量散点层" },
+        "基础平面地图-通用-码头点位": { id: "datav-2dmap-vector-scatter_P1XSw", type: "矢量散点层" },
 
-        "基础平面地图-地图上的点位": { id: "datavmap-canvas2d-scatter-mix_xwEWU", type: "混合散点层" },
-        "基础平面地图-地图上的气泡": { id: "datavmap-canvas2d-stream-popups_pLBEU", type: "流式气泡" },
-        "基础平面地图-地图上的标记点": { id: "datavmap-canvas2d-scatter-image_87Z9Y", type: "图标散点层" },
+        "基础平面地图-地图上的船舶点位": { id: "datav-2dmap-icon-scatter_LMlvd", type: "混合散点层" },
+        "基础平面地图-地图上的船舶气泡": { id: "datav-2dmap-carousel-label_NZM4s", type: "轮播标签层" },
+        "基础平面地图-聚焦标注点": { id: "datav-2dmap-icon-scatter_ry5YA", type: "图标散点层" },
 
         /**
          * ===遮罩层组件===
@@ -2455,9 +2555,9 @@ module.exports = (stage) => {
 
           stage.get(this.ComList['基础平面地图-通用-码头点位'].id).hide();
           stage.get(this.ComList['基础平面地图-锚地动态-所有锚地'].id).hide();
-          stage.get(this.ComList['基础平面地图-地图上的标记点'].id).hide();
+          stage.get(this.ComList['基础平面地图-聚焦标注点'].id).hide();
 
-          // stage.get(this.ComList['基础平面地图'].id).mapView.map.flyTo([30, 122], 10.4);
+          // stage.get(this.ComList['基础平面地图'].id).viewer.map.flyTo([30, 122], 10.4);
 
           // 关闭所有已打开的弹窗
           for (let i in this.ComList) {
@@ -2535,10 +2635,10 @@ module.exports = (stage) => {
               let da = res.data.rows[0]
               if (da) {
                 let lnglatArr = this.wgs84togcj02(da.lon, da.lat);
-                stage.get(this.ComList['基础平面地图'].id).mapView.map.flyTo([lnglatArr[1], lnglatArr[0]], 15);
+                stage.get(this.ComList['基础平面地图'].id).viewer.map.flyTo([lnglatArr[1], lnglatArr[0]], 12);
 
-                stage.get(this.ComList['基础平面地图-地图上的标记点'].id).render([{ lng: lnglatArr[0], lat: lnglatArr[1] }]);
-                stage.get(this.ComList['基础平面地图-地图上的标记点'].id).show();
+                stage.get(this.ComList['基础平面地图-聚焦标注点'].id).render([{ lng: lnglatArr[0], lat: lnglatArr[1] }]);
+                stage.get(this.ComList['基础平面地图-聚焦标注点'].id).show();
               }
             })
           }
@@ -2667,7 +2767,10 @@ module.exports = (stage) => {
             }
             this.ComApi['getEnterOuterShipList'].call(this, { seaRoute: cf[name], dateType: "当日", }).then(res => {
               try {
-                stage.get(this.ComList['航道动态情况模块-航门通过量下钻弹窗-船舶列表'].id).render(res.data.rows)
+                stage.get(this.ComList['航道动态情况模块-航门通过量下钻弹窗-船舶列表'].id).render(res.data.rows.map(i => {
+                  i.arrangeLineTime = i.arrangeLineTime != null ? i.arrangeLineTime.slice(5) : ""
+                  return i
+                }))
               } catch (ee) {
                 console.log("getEnterOuterShipList接口错误", ee)
               }
@@ -2737,7 +2840,10 @@ module.exports = (stage) => {
             }
             this.ComApi['getEnterOuterShipList'].call(this, { seaRoute: cf[name], dateType: "当日", }).then(res => {
               try {
-                stage.get(this.ComList['航道动态情况模块-航门通过量下钻弹窗-船舶列表'].id).render(res.data.rows)
+                stage.get(this.ComList['航道动态情况模块-航门通过量下钻弹窗-船舶列表'].id).render(res.data.rows.map(i => {
+                  i.arrangeLineTime = i.arrangeLineTime != null ? i.arrangeLineTime.slice(5) : ""
+                  return i
+                }))
               } catch (ee) {
                 console.log("getEnterOuterShipList接口错误", ee)
               }
@@ -2793,6 +2899,17 @@ module.exports = (stage) => {
                 }
                 return T
               }, []);
+              stage.get(this.ComList['基础平面地图-锚地动态-所有锚地'].id).setGeojson({
+                "type": "FeatureCollection",
+                "name": "所有锚地面",
+                "crs": {
+                  "type": "name",
+                  "properties": {
+                    "name": "urn:ogc:def:crs:OGC:1.3:CRS84"
+                  }
+                },
+                "features": Arr
+              });
               stage.get(this.ComList['基础平面地图-锚地动态-所有锚地'].id).render({
                 "type": "FeatureCollection",
                 "name": "所有锚地面",
@@ -3025,6 +3142,7 @@ module.exports = (stage) => {
               console.log("Getjjhscbqdlb接口错误", e)
             }
           })
+          this.ComEvent['jtxlzb_jjhscbzbdb_tab'].call(this,{content:"经济航速总艘次"})
         },
         jtxlzb_sd_dgcqg_apis: function (type) {
           this.ComList[`交通效率指标模块-${type}`].toggle("show");
@@ -3076,7 +3194,9 @@ module.exports = (stage) => {
                   let da = res.data.rows[0]
                   if (da) {
                     let lnglatArr = this.wgs84togcj02(da.lon, da.lat);
-                    stage.get(this.ComList['基础平面地图'].id).mapView.map.flyTo([lnglatArr[1], lnglatArr[0]], 14);
+                    stage.get(this.ComList['基础平面地图'].id).viewer.map.flyTo([lnglatArr[1], lnglatArr[0]], 12);
+                    stage.get(this.ComList['基础平面地图-聚焦标注点'].id).render([{ lng: lnglatArr[0], lat: lnglatArr[1] }]);
+                    stage.get(this.ComList['基础平面地图-聚焦标注点'].id).show();
                   }
                 })
               }
@@ -3153,18 +3273,18 @@ module.exports = (stage) => {
 
               cf = { "year": "近3年", "month": "近6月" };
               let timeDimension = cf[this.Store.module_hddtqk['curDialogTimeDimensionFor条帚门船舶流量']]
-              this.ComApi['getTsmShipFlow'].call(this, { timeDimension }).then(res => { // 近3年(默认)、近6月
-                try {
-                  let da = res.data.rows;
-                  stage.get(this.ComList['航道动态情况模块-条帚门航道能力下钻弹窗-船舶流量'].id).render(da.map(i => {
-                    i.x = i.date;
-                    i.y = i.cnt;
-                    return i
-                  }));
-                } catch (e) {
-                  console.log("getTsmShipFlow接口错误")
-                }
-              })
+              // this.ComApi['getTsmShipFlow'].call(this, { timeDimension }).then(res => { // 近3年(默认)、近6月
+              //   try {
+              //     let da = res.data.rows;
+              //     stage.get(this.ComList['航道动态情况模块-条帚门航道能力下钻弹窗-船舶流量'].id).render(da.map(i => {
+              //       i.x = i.date;
+              //       i.y = i.cnt;
+              //       return i
+              //     }));
+              //   } catch (e) {
+              //     console.log("getTsmShipFlow接口错误")
+              //   }
+              // })
 
               this.ComApi['getTsmShipList'].call(this, {}).then(res => {
                 try {
@@ -3287,8 +3407,8 @@ module.exports = (stage) => {
             stage.get('main-title_gSjhv').render([{ value: e.content }])
             stage.get('bar-basic_PmOQR').render(arr)
             stage.get('number-title-flop_16PL9').render([{
-              name: "船均",
-              value: (moni[e.content]['2021']) / (res.data.rows[0][config['经济航速总艘次']]),
+              name: "本年船均",
+              value: (res.data.rows[0][config[e.content]]) / (res.data.rows[0][config['经济航速总艘次']]),
               suffix: suffixCF[e.content]
             }])
             stage.get('number-title-flop_VB5uo').render([{
@@ -3352,10 +3472,10 @@ module.exports = (stage) => {
               let da = res.data.rows[0];
               if (da && da.geom) {
                 lnglatArr = this.filter_POLYGON(da.geom);
-                stage.get(this.ComList['基础平面地图'].id).mapView.map.flyTo([lnglatArr[0][0][1], lnglatArr[0][0][0]], 13);
+                stage.get(this.ComList['基础平面地图'].id).viewer.map.flyTo([lnglatArr[0][0][1], lnglatArr[0][0][0]], 12);
               }
             } catch (e) {
-              console.log("getJyjhqdlb接口错误", e)
+              console.log("getmdsj接口错误", e)
             }
           })
         },
@@ -3450,9 +3570,13 @@ module.exports = (stage) => {
           })
           this.ComApi['GetGmdbngylfb'].call(this, {}).then(res => {
             try {
-              stage.get(this.ComList['锚地动态情况模块-保税油下钻弹窗-本年度各锚地加注船舶列表'].id).render(res.data.rows.filter(i => i.gyl).map((i, index) => {
+              let total = 0;
+              res.data.rows.forEach(i=>total = total + Number(i.gyl) )
+              stage.get(this.ComList['锚地动态情况模块-保税油下钻弹窗-本年度各锚地加注船舶列表'].id).render(res.data.rows.filter(i => Math.floor(i.gyl/1000)>0?true:false)
+              .sort((a,b)=>a.gyl-b.gyl).map((i, index) => {
                 i.time = i.time + "年"
-                i.gyl = parseFloat((i.gyl / 10000)).toFixed(2).toLocaleString() + "万"
+                i.per = (Number(i.gyl/total)*100).toFixed(2) + "%"
+                i.gyl = parseFloat((i.gyl / 10000)).toFixed(2).toLocaleString() + "万";
                 return i
               }))
             } catch (e) {
@@ -3625,7 +3749,7 @@ module.exports = (stage) => {
           let positionTimeStart =
             `${D.getFullYear()}-${D.getMonth() + 1 >= 10 ? D.getMonth() + 1 : "0" + (D.getMonth() + 1)}-${D.getDate() >= 10 ? D.getDate() : "0" + D.getDate()} ${D.getHours() >= 10 ? D.getHours() : "0" + D.getHours()}:${D.getMinutes() >= 10 ? D.getMinutes() : "0" + D.getMinutes()}:00`;
           let _param = {
-            polygon: `polygon((121.53350830078124 29.57106827738255,122.75299072265624 29.57106827738255,122.75299072265624 30.244831915307145,121.53350830078124 30.244831915307145,121.53350830078124 29.57106827738255))`,
+            polygon: `polygon((121.52252197265626 30.185496022109444,121.95510864257811 30.314802211415493,122.12677001953124 30.273300428069934,122.17208862304686 30.08394879932517,122.39456176757811 29.890662187739487,122.39181518554686 29.841835102794132,122.54287719726562 29.789408737415222,122.53738403320312 29.611670115197377,122.15972900390624 29.60928222414313,121.84799194335936 29.71548859443817,121.72027587890624 29.957314210401563,121.52252197265626 30.185496022109444))`,
             isFish: 1,
             positionTimeStart,
             positionTimeEnd,
@@ -3686,7 +3810,7 @@ module.exports = (stage) => {
           let seaRouteConfig = { 1: "虾峙门", 2: "条帚门", 3: "双屿门", 4: "西猴门", 5: "金塘大桥", 6: "青龙门" }
           this.ComApi['getShipInfoByPolygonOrg'].call(this).then(res => {
             // 具体映射表找应用测
-            let aaaaaaaaaaa = {
+            let ColorMap = {
               "red": ['0307', '0302', '0303', '0504', '0301', '0306', '0304', '0300'],
               "blue": [],
               "green": ['0111', '0103', '0109', '0100', '0102', '0107', '0105', '0101', '0212', '0108', '0110', '0104', '0112', '0106', '0905', '0903',
@@ -3696,8 +3820,8 @@ module.exports = (stage) => {
             let returnType = (code, speed) => {
               // “节”是一个航海术语，航海速度单位。1节表示的是1小时航行1海里，1海里是1.852千米。也就是每小时船航行1.852千米，叫一节。换算成米每秒为0.514米/秒。
               let sp = speed / 0.514 > 2.5 ? "" : "1"
-              for (let i in aaaaaaaaaaa) {
-                if (aaaaaaaaaaa[i].findIndex(ii => ii == code) != -1) {
+              for (let i in ColorMap) {
+                if (ColorMap[i].findIndex(ii => ii == code) != -1) {
                   return i + sp
                 }
               }
@@ -3706,7 +3830,7 @@ module.exports = (stage) => {
 
             let runArr = [];
             let totalNum = res.data.totalNum;
-            let totalPage = Math.ceil(res.data.totalNum / res.data.pageSize);
+            let totalPage = Math.ceil(totalNum / res.data.pageSize);
             for (let i = 2; i <= totalPage; i++) runArr.push(this.ComApi['getShipInfoByPolygonOrg'].call(this, i))
             Promise.all(runArr).then(resss => {
               resss.forEach(i => res.data.rows.push(i.data.rows))
@@ -3714,66 +3838,91 @@ module.exports = (stage) => {
 
 
               // 气泡数据
-              // dwd_trafficflow_apply_enter_out_port_df_bubble
               this.ComApi['dwd_trafficflow_apply_enter_out_port_df_bubble'].call(this).then(bubbleInfo => {
 
-
-
-                // this.ComApi['dwd_trafficflow_apply_enter_out_port_df'].call(this,{
-                // 	eventStatus:4,
-                // 	enterOutFlag:0,
-                // 	enterOut:"进"
-                // }).then(bubbleInfo=>{
-
                 let bubbleList = [];
+                let dotList = []
+
                 res.data.rows.forEach(i => {
                   if (i && i.lon && i.lat) {
                     let lnglatArr = this.wgs84togcj02(i.lon, i.lat);
-                    i.lng = lnglatArr[0];
-                    i.lat = lnglatArr[1];
-                    i.type = returnType(i.shipTypeCode, i.speed)
-                    i.rotationAngle = i.direction;
-
-
+                    let flag = false
 
 
                     bubbleInfo.data.rows.forEach(bubble => {
                       if (bubble.mmsi == i.mmsi && bubble.enterPortNumber) {
+                        flag = true
                         bubbleList.push({
-                          "lng": i.lng,
-                          "lat": i.lat,
-                          "info": (bubble.enterPortNumber || " ") + "  " + (bubble.arrangeLineTime != null ? bubble.arrangeLineTime.slice(11) : "" || " ") + "</br>"
+                          "lng": lnglatArr[0],
+                          "lat": lnglatArr[1],
+                          "name": (bubble.enterPortNumber || " ") + "  " + (bubble.arrangeLineTime != null ? bubble.arrangeLineTime.slice(11) : "" || " ") + "</br>"
                             + ((bubble.shipNameCh + "</br>") || "")
                             + (bubble.berthWharf || "") + (bubble.dependBerthTime != null ? bubble.dependBerthTime.slice(11) : "") + ((bubble.berthWharf || bubble.dependBerthTime) ? "</br>" : "")
                             + "引: " + (bubble.pilots || " ")
                         })
-                        i.info = "进港编号:" + (bubble.enterPortNumber || " ") + "</br>"
-                          + "mmsi:" + (i.mmsi || " ") + "</br>"
-                          + "imo:" + (i.imo || " ") + "</br>"
-                          + "船名:" + (i.shipNameCn || " ") + "</br>"
-                          + "国籍:" + (i.nationName || " ") + "</br>"
-                          + "船舶类型:" + (bubble.shipType || " ") + "</br>"
-                          + "航道:" + (seaRouteConfig[bubble.seaRoute] || " ") + "</br>"
-                          + "预计进港时间:" + (bubble.arrangeLineTime || " ") + "</br>"
-                          + "载货:" + (bubble.loadCargo || " ") + "</br>"
-                          + "引航员、电话:" + (i.pilotPhone || " ") + (bubble.pilots || " ") + "</br>"
-                          + "码头:" + (bubble.berthWharf || " ") + "</br>"
-                          + "拟靠泊时间:" + (bubble.arrangeLineTime || " ") + "</br>"
-                          + "卫星电话:" + (bubble.satellitePhone || " ") + "</br>"
+                        i.enterPortNumber = bubble.enterPortNumber
+                        i.shipType = bubble.shipType || " "
+                        i.seaRoute = seaRouteConfig[bubble.seaRoute] || " "
+                        i.arrangeLineTime = bubble.arrangeLineTime || " "
+                        i.pilot = bubble.pilotPhone + " " + bubble.pilots || " "
+                        i.berthWharf = bubble.berthWharf || " "
+                        i.arrangeLineTime = bubble.arrangeLineTime || " "
+                        i.satellitePhone = bubble.satellitePhone || " "
+
+
+
+                        // i.info = "进港编号:" + (bubble.enterPortNumber || " ") + "</br>"
+                        //   + "mmsi:" + (i.mmsi || " ") + "</br>"
+                        //   + "imo:" + (i.imo || " ") + "</br>"
+                        //   + "船名:" + (i.shipNameCn || " ") + "</br>"
+                        //   + "国籍:" + (i.nationName || " ") + "</br>"
+                        //   + "船舶类型:" + (bubble.shipType || " ") + "</br>"
+                        //   + "航道:" + (seaRouteConfig[bubble.seaRoute] || " ") + "</br>"
+                        //   + "预计进港时间:" + (bubble.arrangeLineTime || " ") + "</br>"
+                        //   + "载货:" + (bubble.loadCargo || " ") + "</br>"
+                        //   + "引航员、电话:" + (i.pilotPhone || " ") + (bubble.pilots || " ") + "</br>"
+                        //   + "码头:" + (bubble.berthWharf || " ") + "</br>"
+                        //   + "拟靠泊时间:" + (bubble.arrangeLineTime || " ") + "</br>"
+                        //   + "卫星电话:" + (bubble.satellitePhone || " ") + "</br>"
                       }
                     })
 
 
+
+                    let opt = {
+                      lng: lnglatArr[0],
+                      lat: lnglatArr[1],
+                      type: returnType(i.shipTypeCode, i.speed),
+                      rotationAngle: i.direction,
+                    }
+                    if (flag) {
+                      opt = Object.assign(opt, {
+                        enterPortNumber: i.enterPortNumber || " ",
+                        mmsi: i.mmsi || " ",
+                        imo: i.imo || " ",
+                        shipNameCn: i.shipNameCn || " ",
+                        nationName: i.nationName || " ",
+                        shipType: i.shipType || " ",
+                        seaRoute: i.seaRoute || " ",
+                        arrangeLineTime: i.arrangeLineTime || " ",
+                        pilot: i.pilot || " ",
+                        berthWharf: i.berthWharf || " ",
+                        arrangeLineTimesss: i.arrangeLineTimesss || " ",
+                        satellitePhone: i.satellitePhone || " "
+                      })
+                    }
+                    dotList.push(opt)
+
                   }
+
                 });
 
                 // console.log("===气泡数据", JSON.stringify(bubbleList))
-                // console.log("===1气泡数据", res.data.rows)
-
-                stage.get(this.ComList['基础平面地图-地图上的点位'].id).show();
-                stage.get(this.ComList['基础平面地图-地图上的点位'].id).render(res.data.rows)
-                stage.get(this.ComList['基础平面地图-地图上的气泡'].id).show();
-                stage.get(this.ComList['基础平面地图-地图上的气泡'].id).render(bubbleList.slice(0, 30))  // 客户答应就展示30个  不气泡轮播
+                // console.log("===点位数据",JSON.stringify(dotList))
+                stage.get(this.ComList['基础平面地图-地图上的船舶点位'].id).show();
+                stage.get(this.ComList['基础平面地图-地图上的船舶点位'].id).render(dotList)
+                stage.get(this.ComList['基础平面地图-地图上的船舶气泡'].id).show();
+                stage.get(this.ComList['基础平面地图-地图上的船舶气泡'].id).render(bubbleList.slice(0, 50))  // 客户答应就展示30个  不气泡轮播
                 returnType = null
               })
             });
