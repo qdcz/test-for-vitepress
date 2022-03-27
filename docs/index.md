@@ -13,5 +13,5 @@ features:
     details: NodeJs、数据库基础、Mysql、MongoDB、Redis
   - title: 三维设计
     details: Unity、UE4、Unreal
-footer: MIT Licensed | Copyright © 2019-present Evan You
+footer: MIT Licensed | Copyright © 2019-chenxy
 ---

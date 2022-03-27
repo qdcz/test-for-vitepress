@@ -9,19 +9,19 @@ module.exports = {
             { text: '关于', link: '/about/index' },
             { text: '友情链接', link: '/contact/index' }
         ],
-        sidebar: {
-            '/client/JavaScript': [
-                // { text: 'html', link: '/client/html' },
-                // { text: 'css', link: '/client/css' },
-                { text: 'base', link: '/client/javaScript/base' },
-                { text: 'jinjie', link: '/client/javaScript/jinjie' }
+        // sidebar: {
+        //     '/client/': [
+        //         // { text: 'html', link: '/client/html' },
+        //         // { text: 'css', link: '/client/css' },
+        //         { text: 'base', link: '/client/javaScript/base' },
+        //         { text: 'jinjie', link: '/client/javaScript/jinjie' }
 
-            ],
-            '/service/': [
-                { text: 'tt03', link: '/test02/index' },
-                { text: 'tt04', link: '/test02/index' }
-            ]
-        },
+        //     ],
+        //     '/service/': [
+        //         { text: 'tt03', link: '/test02/index' },
+        //         { text: 'tt04', link: '/test02/index' }
+        //     ]
+        // },
         carbonAds: {
             carbon: 'your-carbon-key',
             custom: 'your-carbon-custom',

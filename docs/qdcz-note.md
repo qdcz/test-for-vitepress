@@ -9,7 +9,9 @@ npx vitepress build
 
 
 # 启动开发版
-npm run docs:dev  
+npm run docs:dev
+# 启动开发版
+npm run docs:build
 # 打包
 npm run build
 # 把打包结果在本地服务端运行
