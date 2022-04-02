@@ -1,0 +1,1 @@
+import{_ as e,c as a,o as r,a as t}from"./app.ab8313b5.js";const f='{"title":"\u5B89\u88C5","description":"","frontmatter":{},"headers":[],"relativePath":"qdcz-note.md","lastUpdated":1648202391354}',d={},n=t("",16),i=[n];function s(h,p,c,o,_,l){return r(),a("div",null,i)}var x=e(d,[["render",s]]);export{f as __pageData,x as default};

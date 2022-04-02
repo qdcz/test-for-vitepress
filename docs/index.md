@@ -2,7 +2,7 @@
 home: true
 heroImage: /logo.jpeg
 heroAlt: Logo image
-heroText: 澜洋🐂🐂
+heroText: 澜漾🐂🐂
 tagline: 个人成长纪录
 actionText: 开始观摩
 actionLink: /home/home

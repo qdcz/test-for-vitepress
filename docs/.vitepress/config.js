@@ -7,7 +7,8 @@ module.exports = {
         nav: [
             { text: '首页', link: '/' },
             { text: '关于', link: '/about/index' },
-            { text: '友情链接', link: '/contact/index' }
+            { text: '友情链接', link: '/concat/index' },
+            { text: '临时存储', link: '/temporary/index' }
         ],
         // sidebar: {
         //     '/client/': [
@@ -22,10 +23,13 @@ module.exports = {
         //         { text: 'tt04', link: '/test02/index' }
         //     ]
         // },
-        carbonAds: {
-            carbon: 'your-carbon-key',
-            custom: 'your-carbon-custom',
-            placement: 'your-carbon-placement'
-          }
-    }
+        // carbonAds: {
+        //     carbon: 'your-carbon-key',
+        //     custom: 'your-carbon-custom',
+        //     placement: 'your-carbon-placement'
+        //   }
+    },
+    markdown: {
+        lineNumbers: true
+      }
 }
