@@ -10,6 +10,10 @@ module.exports = {
             { text: '友情链接', link: '/concat/index' },
             { text: '临时存储', link: '/temporary/index' }
         ],
+        // markdown: {
+        //     extractHeaders: ['h2', 'h3', 'h4', 'h5', 'h6']
+        // },
+        sidebar:"auto"
         // sidebar: {
         //     '/client/': [
         //         // { text: 'html', link: '/client/html' },
@@ -30,6 +34,14 @@ module.exports = {
         //   }
     },
     markdown: {
-        lineNumbers: true
-      }
+        // extractHeaders: ['h2', 'h3', 'h4', 'h5', 'h6'],
+        lineNumbers: true,
+        // options for markdown-it-anchor
+        anchor: { level: 4 },
+        // options for markdown-it-toc
+        config: (md) => {
+            // use more markdown-it plugins!
+            md.use(require('markdown-it-anchor'))
+        }
+    }
 }

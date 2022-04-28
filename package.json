@@ -12,6 +12,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "markdown-it-anchor": "^8.6.2",
     "vitepress": "^0.22.0"
   }
 }
