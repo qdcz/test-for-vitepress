@@ -2,4 +2,4 @@
 
 ## [函数](./函数.md)
 
-## [XMLHttpRequest](./XMLHttpRequest .md)
+## [XMLHttpRequest](./XMLHttpRequest.md)
