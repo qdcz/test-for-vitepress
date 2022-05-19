@@ -1,11 +1,5 @@
 ## [JavaScript基础](./base.md)
 
-
 ## [函数](./函数.md)
 
-# 1
-## 2
-### 3
-#### 4
-##### 5
-###### 6
+## [XMLHttpRequest](./XMLHttpRequest .md)
