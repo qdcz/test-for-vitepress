@@ -6,7 +6,7 @@ module.exports = {
     themeConfig: {
         nav: [
             { text: '首页', link: '/' },
-            // { text: '码上行动', link: '/home/home' },
+            { text: '码上行动', link: '/home/home' },
             { text: '药香四溢', link: '/interest/drug/index' },
             { text: '乐动人生', link: '/interest/music/index' },
             { text: '关于', link: '/about/index' },
