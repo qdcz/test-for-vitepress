@@ -6,6 +6,8 @@
 
 [JavaScript](../client/javaScript/index.md)
 
+[TypeScript](../client/TypeScript/index.md)
+
 [Vue](../service/NodeJs/index.md)
 
 [React](../service/NodeJs/index.md)
