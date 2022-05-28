@@ -1,6 +1,8 @@
+
 ## 概念
 XMLHttpRequest 是一种创建ajax请求的JavaScriptApi 提供游览器与服务器之间的发送请求的能力
 
+#### 55
 ## 使用
 
 ```js
