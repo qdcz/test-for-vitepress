@@ -2,7 +2,7 @@ import { defineConfig } from 'vitepress'
 export default defineConfig({
     // base: '/',
     lang: 'en-CN',
-    title: '念头通达',
+    title: '澜漾',
     description: '广天下之广,深天下之深',
     themeConfig: {
         logo: '/logo2.jpg',
@@ -15,14 +15,9 @@ export default defineConfig({
         searchMaxSuggestions: 10,
         nav: [
             { text: '首页', link: '/' },
+            { text: '码上行动', link: '/home/home' },
             {
-                text: '码上行动',
-                items: [
-                    { text: '汇总', link: '/home/home' },
-                ]
-            },
-            {
-                text: '兴趣',
+                text: '杂',
                 items: [
                     { text: '药香氤氲', link: '/interest/drug/index' },
                     { text: '乐动人生', link: '/interest/music/index' },

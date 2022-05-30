@@ -300,7 +300,9 @@ var arr:number[]|string[];
 
 ## 接口
 
- 接口是一系列抽象方法的声明，是一些方法特征的集合，这些方法都应该是抽象的，需要由具体的类去实现，然后第三方就可以通过这组抽象方法调用，让具体的类执行具体的方法。 
+接口是一系列抽象方法的声明，是一些方法特征的集合，这些方法都应该是抽象的，需要由具体的类去实现，然后第三方就可以通过这组抽象方法调用，让具体的类执行具体的方法。 
+
+### 接口基本用法
 
 ```typescript
 interface IPerson { 
@@ -331,4 +333,273 @@ console.log(employee.firstName)
 console.log(employee.lastName)
 ```
 
-接口未完待续....
+
+
+### 在接口使用联合类型
+
+```typescript
+interface RunOptions { 
+    program:string; 
+    commandline:string[]|string|(()=>string); 
+} 
+ 
+// commandline 是字符串
+var options:RunOptions = {program:"test1",commandline:"Hello"}; 
+ 
+// commandline 是字符串数组
+options = {program:"test1",commandline:["Hello","World"]}; 
+ 
+// commandline 是一个函数表达式
+options = {program:"test1",commandline:()=>{return "**Hello World**";}}; 
+```
+
+### 接口与数组
+
+ 数组的索引值和元素设置为不同类型，索引值可以是数字或字符串 
+
+```typescript
+interface namelist { 
+   [index:number]:string 
+} 
+
+// 类型一致，正确
+var list2:namelist = ["Google","Runoob","Taobao"]
+// 错误元素 1 不是 string 类型
+var list2:namelist = ["Runoob",1,"Taobao"]
+```
+
+```typescript
+interface ages { 
+   [index:string]:number 
+} 
+ 
+var agelist:ages; 
+ // 类型正确 
+agelist["runoob"] = 15  
+ 
+// 类型错误，输出  error TS2322: Type '"google"' is not assignable to type 'number'.
+agelist[2] = "google"
+```
+
+### 接口单继承
+
+```typescript
+interface Person { 
+   age:number 
+} 
+ 
+interface Musician extends Person { 
+   instrument:string 
+} 
+ 
+var drummer = <Musician>{}; 
+drummer.age = 27 
+drummer.instrument = "Drums" 
+```
+
+### 接口多继承
+
+```typescript
+interface IParent1 { 
+    v1:number 
+} 
+ 
+interface IParent2 { 
+    v2:number 
+} 
+ 
+interface Child extends IParent1, IParent2 { } 
+var Iobj:Child = { v1:12, v2:23} 
+```
+
+## 类
+
+ 类描述了所创建的对象共同的属性和方法。 
+
+```typescript
+class Car { 
+    // 字段 
+    engine:string; 
+ 
+    // 构造函数 
+    constructor(engine:string) { 
+        this.engine = engine 
+    }  
+ 
+    // 方法 
+    disp():void { 
+        console.log("发动机为 :   "+this.engine) 
+    } 
+}
+
+
+// 创建一个对象
+var obj = new Car("XXSY1")
+// 访问字段
+console.log("读取发动机型号 :  "+obj.engine)  
+// 访问方法
+obj.disp()
+```
+
+### 类的继承
+
+```typescript
+class Shape { 
+   Area:number 
+   
+   constructor(a:number) { 
+      this.Area = a 
+   } 
+} 
+ 
+class Circle extends Shape { 
+   disp():void { 
+      console.log("圆的面积:  "+this.Area) 
+   } 
+}
+```
+
+### 类的多继承
+
+ TypeScript 一次只能继承一个类，不支持继承多个类，但 TypeScript 支持多重继承（A 继承 B，B 继承 C）。 
+
+```typescript
+class Root { 
+   str:string; 
+} 
+ 
+class Child extends Root {} 
+class Leaf extends Child {} // 多重继承，继承了 Child 和 Root 类
+ 
+var obj = new Leaf(); 
+```
+
+### 继承类的方法重写
+
+```typescript
+class PrinterClass { 
+   doPrint():void {
+      console.log("父类的 doPrint() 方法。") 
+   } 
+} 
+ 
+class StringPrinter extends PrinterClass { 
+   doPrint():void { 
+      super.doPrint() // 调用父类的函数
+      console.log("子类的 doPrint()方法。")
+   } 
+}
+```
+
+### static关键字
+
+ static 关键字用于定义类的数据成员（属性和方法）为静态的，静态成员可以直接通过类名调用。 
+
+```typescript
+class StaticMem {  
+   static num:number; 
+   
+   static disp():void { 
+      console.log("num 值为 "+ StaticMem.num) 
+   } 
+} 
+ 
+StaticMem.num = 12     // 初始化静态变量
+StaticMem.disp()       // 调用静态方法
+```
+
+### 访问控制修饰符
+
+ TypeScript 中，可以使用访问控制符来保护对类、变量、方法和构造方法的访问。TypeScript 支持 3 种不同的访问权限。 
+
+- **public（默认）** : 公有，可以在任何地方被访问。
+- **protected** : 受保护，可以被其自身以及其子类访问。
+- **private** : 私有，只能被其定义所在的类访问。
+
+```typescript
+class Encapsulate { 
+   str1:string = "hello" 
+   private str2:string = "world" 
+}
+ 
+var obj = new Encapsulate() 
+console.log(obj.str1)     // 可访问 
+console.log(obj.str2)   // 编译错误， str2 是私有的
+```
+
+### 类直接实现接口
+
+ 类可以实现接口，使用关键字 implements，并将 interest 字段作为类的属性使用。 
+
+```typescript
+interface ILoan { 
+   interest:number 
+} 
+ 
+class AgriLoan implements ILoan { 
+   interest:number 
+   rebate:number 
+   
+   constructor(interest:number,rebate:number) { 
+      this.interest = interest 
+      this.rebate = rebate 
+   } 
+} 
+ 
+var obj = new AgriLoan(10,1) 
+console.log("利润为 : "+obj.interest+"，抽成为 : "+obj.rebate )
+```
+
+## 对象
+
+ 在 TypeScript  如果在对象内没有声明模板不可直接赋值
+
+```typescript
+var sites = { 
+   site1:"Runoob", 
+   site2:"Google" 
+};
+sites.aaa = = function(){ return "hello";}  // 会直接报错
+```
+
+正确的写法应该为如下：
+
+```typescript
+var sites = {
+    site1: "Runoob",
+    site2: "Google",
+    aaa: function () { } // 类型模板
+};
+sites.aaa = = function(){ return "hello";} 	
+```
+
+### 鸭子类型(Duck Typing)
+
+鸭子类型（英语：duck typing）是动态类型的一种风格，是多态(polymorphism)的一种形式。
+
+在这种风格中，一个对象有效的语义，不是由继承自特定的类或实现特定的接口，而是由"当前方法和属性的集合"决定。
+
+> 可以这样表述：
+>
+> "当看到一只鸟走起来像鸭子、游泳起来像鸭子、叫起来也像鸭子，那么这只鸟就可以被称为鸭子。"
+
+ 在鸭子类型中，关注点在于对象的行为，能作什么；而不是关注对象所属的类型。例如，在不使用鸭子类型的语言中，我们可以编写一个函数，它接受一个类型为"鸭子"的对象，并调用它的"走"和"叫"方法。在使用鸭子类型的语言中，这样的一个函数可以接受一个任意类型的对象，并调用它的"走"和"叫"方法。如果这些需要被调用的方法不存在，那么将引发一个运行时错误。任何拥有这样的正确的"走"和"叫"方法的对象都可被函数接受的这种行为引出了以上表述，这种决定类型的方式因此得名。 
+
+```typescript
+interface IPoint { 
+    x:number 
+    y:number 
+} 
+function addPoints(p1:IPoint,p2:IPoint):IPoint { 
+    var x = p1.x + p2.x 
+    var y = p1.y + p2.y 
+    return {x:x,y:y} 
+} 
+ 
+// 正确
+var newPoint = addPoints({x:3,y:4},{x:5,y:1})  
+ 
+// 错误 
+var newPoint2 = addPoints({x:1},{x:4,y:3})
+```
+
