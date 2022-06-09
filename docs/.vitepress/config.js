@@ -17,6 +17,7 @@ export default defineConfig({
             { text: '首页', link: '/' },
             { text: '码上行动', link: '/home/home' },
             { text: '编辑器快捷键', link: '/IDEShortcutKey/WebStorm' },
+            { text: '环境搭建', link: '/environmentConstruction/index' },
             {
                 text: '杂',
                 items: [
