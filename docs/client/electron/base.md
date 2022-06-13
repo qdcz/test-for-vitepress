@@ -111,7 +111,7 @@ console.log(window.myAPI)// => { desktop: true }
 ```
 
 ```js
-// index.js
+// app.js
 
 const { app, BrowserWindow } = require('electron')
 
