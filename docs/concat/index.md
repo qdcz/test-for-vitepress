@@ -8,6 +8,9 @@
 
 [nginx文档](http://shouce.jb51.net/nginx/left.html)
 
+[redis SDK](http://www.redis.cn/clients.html#nodejs) ---
+[redis npm包文档](https://github.com/redis/node-redis) ---
+[ioredis npm包文档](https://github.com/luin/ioredis)
 
 [node文档](http://nodejs.cn/api/) --- 
 [koa文档](https://koa.bootcss.com/) --- 
