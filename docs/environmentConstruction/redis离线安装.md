@@ -26,7 +26,7 @@ vim redis_init_script  	修改配置我文件 如下
 ```shell
 ### BEGIN INIT INFO
 REDISPORT=6379
-EXEC=/usr/local/bin/redis-server
+EXEC=/usr/local/bin/redis-control
 CLIEXEC=/usr/local/bin/redis-cli
 
 PIDFILE=/var/run/redis_${REDISPORT}.pid

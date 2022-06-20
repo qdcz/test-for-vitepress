@@ -322,15 +322,15 @@ openssl req -x509 -new -nodes -key rootCA.key -sha256 -days 1024 -out rootCA.crt
 
 ```shell
 #创建server私钥
-openssl genrsa -out server.key 2048
+openssl genrsa -out control.key 2048
 #根据配置要的openssl参数创建服务器csr文件， 后面会用到
-openssl req -new -key server.key -out server.csr -extensions v3_req
+openssl req -new -key control.key -out control.csr -extensions v3_req
 ```
 
 3)、使用CA证书给server.csr做签名
 
 ```shell
-openssl x509 -req -days 500 -in server.csr -CA rootCA.crt -CAkey rootCA.key -CAcreateserial -out server.crt -sha256 -extensions v3_req
+openssl x509 -req -days 500 -in control.csr -CA rootCA.crt -CAkey rootCA.key -CAcreateserial -out control.crt -sha256 -extensions v3_req
 ```
 
 4)、将证书放到nginx的conf目录下    如果不这么做 你也可在配置中指定证书的位置
@@ -343,12 +343,12 @@ ssl_certificate_key  server.key;
 ng完整配置如下：
 
 ```shell
-server {
+control {
     listen       443 ssl;
     server_name  192.168.237.128;
 
-    ssl_certificate      server.crt;
-    ssl_certificate_key  server.key;
+    ssl_certificate      control.crt;
+    ssl_certificate_key  control.key;
     ssl_session_cache    shared:SSL:1m;
     ssl_session_timeout  5m;
     ssl_ciphers  HIGH:!aNULL:!MD5;
@@ -450,7 +450,7 @@ http {
 
     #gzip  on;
 
-    server {
+    control {
         listen       8688;
         server_name  localhost;
 
@@ -477,7 +477,7 @@ http {
 
         #error_page  404              /404.html;
 
-        # redirect server error pages to the static page /50x.html
+        # redirect control error pages to the static page /50x.html
         #
         error_page   500 502 503 504  /50x.html;
         location = /50x.html {
@@ -490,7 +490,7 @@ http {
         #    proxy_pass   http://127.0.0.1;
         #}
 
-        # pass the PHP scripts to FastCGI server listening on 127.0.0.1:9000
+        # pass the PHP scripts to FastCGI control listening on 127.0.0.1:9000
         #
         #location ~ \.php$ {
         #    root           html;
@@ -509,7 +509,7 @@ http {
     }
     
     
-    server {
+    control {
         listen       7001;
         server_name  localhost;
 
@@ -535,7 +535,7 @@ http {
 
         #error_page  404              /404.html;
 
-        # redirect server error pages to the static page /50x.html
+        # redirect control error pages to the static page /50x.html
         #
         error_page   500 502 503 504  /50x.html;
         location = /50x.html {
@@ -548,7 +548,7 @@ http {
         #    proxy_pass   http://127.0.0.1;
         #}
 
-        # pass the PHP scripts to FastCGI server listening on 127.0.0.1:9000
+        # pass the PHP scripts to FastCGI control listening on 127.0.0.1:9000
         #
         #location ~ \.php$ {
         #    root           html;
@@ -569,7 +569,7 @@ http {
 
     # another virtual host using mix of IP-, name-, and port-based configuration
     #
-    #server {
+    #control {
     #    listen       8000;
     #    listen       somename:8080;
     #    server_name  somename  alias  another.alias;
@@ -581,9 +581,9 @@ http {
     #}
 
 
-    # HTTPS server
+    # HTTPS control
     #
-    #server {
+    #control {
     #    listen       443 ssl;
     #    server_name  localhost;
 
