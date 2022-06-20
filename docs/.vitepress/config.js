@@ -21,13 +21,13 @@ export default defineConfig({
             { text: '环境搭建', link: '/environmentConstruction/index' },
             { text: 'windowSkills', link: '/windowSystem/index' },
             { text: 'linuxSkills', link: '/service/Linux/index' },
-            {
-                text: '杂',
-                items: [
-                    { text: '药香氤氲', link: '/interest/drug/index' },
-                    { text: '乐动人生', link: '/interest/music/index' },
-                ]
-            },
+            // {
+            //     text: '杂',
+            //     items: [
+            //         { text: '药香氤氲', link: '/interest/drug/index' },
+            //         { text: '乐动人生', link: '/interest/music/index' },
+            //     ]
+            // },
             { text: '关于', link: '/about/index' },
             { text: '友情链接', link: '/concat/index' },
             { text: '临时存储', link: '/temporary/index' }

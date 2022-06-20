@@ -36,6 +36,8 @@ Node.js 中有四种基本的流类型：
 
 对于对象模式： `highWaterMark`  用于指定对象的总数
 
+>  当实现调用 [`stream.push(chunk)`](http://nodejs.cn/api/stream.html#readablepushchunk-encoding) 时，数据缓存在 `Readable` 流中。 如果流的消费者没有调用 [`stream.read()`](http://nodejs.cn/api/stream.html#readablereadsize)，则数据会一直驻留在内部队列中，直到被消费。 
+
 
 
 ## 可写流(writable)
@@ -115,42 +117,99 @@ console.log("运行完此脚本  在当前目录下会创建一个   这是一�
 
 对于`writable` 类它拥有诸多事件
 
-- **close** 事件		
+#### **close** 事件		
 
-  写入流被关闭时触发
+写入流被关闭时触发
 
-- **drain **事件		
+#### **drain **事件		
 
-  如果对 stream.write(chunk) 的调用返回 false，则 'drain' 事件将在适合继续将数据写入流时触发。
-
-- **error** 事件		
-
-  写入或管道数据时发生错误触发
-
-- **finish **事件	   
-
-  调用writable.end()后，并且所有数据都已刷新到底层系统触发
-
-- **pipe **事件		
-
-  调用writable.pipe()后触发
+如果对 stream.write(chunk) 的调用返回 false，则 'drain' 事件将在适合继续将数据写入流时触发。
 
 ```js
-writable.on('pipe', (src) => {
-  // 管道到此可写流的源流
-  console.log(src)
-});
+// 将数据写入提供的可写流一百万次。
+// 注意背压。
+function writeOneMillionTimes(writer, data, encoding, callback) {
+  let i = 1000000;
+  write();
+  function write() {
+    let ok = true;
+    do {
+      i--;
+      if (i === 0) {
+        // 最后一次！
+        writer.write(data, encoding, callback);
+      } else {
+        // 看看是应该继续，还是等待。
+        // 不要传入回调，因为还没有完成。
+        ok = writer.write(data, encoding);
+      }
+    } while (i > 0 && ok);
+    if (i > 0) {
+      // 必须早点停下来！
+      // 等它排空时再写一些。
+      writer.once('drain', write);
+    }
+  }
+}
 ```
 
-- **unpipe** 事件	
 
-  调用writable.unpipe()后触发
+
+#### **error** 事件		
+
+写入或管道数据时发生错误触发，
+
+除非在创建流时将 [`autoDestroy`](http://nodejs.cn/api/stream.html#new-streamwritableoptions) 选项设置为 `false`，否则当触发 `'error'` 事件时将关闭流。
+
+在 `'error'` 之后，不应触发除 `'close'` 之外的其他事件（包括 `'error'` 事件）。
 
 ```js
-writable.on('unpipe', (src) => {
-  // 取消管道此可写流的源流
-  console.log(src)
+const { Writable } = require('node:stream');
+
+const myStream = new Writable();
+
+const fooErr = new Error('foo error');
+myStream.destroy(fooErr);
+myStream.on('error', (fooErr) => console.error(fooErr.message)); // foo error
+```
+
+
+
+#### **finish **事件	   
+
+调用writable.end()后，并且所有数据都已刷新到底层系统触发
+
+#### **pipe **事件		
+
+ 当在可读流上调用 [`stream.pipe()`](http://nodejs.cn/api/stream.html#readablepipedestination-options) 方法将此可写流添加到其目标集时，则触发 `'pipe'` 事件。 
+
+```js
+const writer = getWritableStreamSomehow();
+const reader = getReadableStreamSomehow();
+writer.on('pipe', (src) => {
+  console.log('Something is piping into the writer.');
+  assert.equal(src, reader);
 });
+reader.pipe(writer);
+```
+
+#### **unpipe** 事件	
+
+`src`取消管道此可写流的源流
+
+当在 [`Readable`](http://nodejs.cn/api/stream.html#class-streamreadable) 流上调用 [`stream.unpipe()`](http://nodejs.cn/api/stream.html#readableunpipedestination) 方法时，则会触发 `'unpipe'` 事件，从其目标集合中删除此 [`Writable`](http://nodejs.cn/api/stream.html#class-streamwritable)。
+
+当 [`Readable`](http://nodejs.cn/api/stream.html#class-streamreadable) 流管道进入它时，如果此 [`Writable`](http://nodejs.cn/api/stream.html#class-streamwritable) 流触发错误，则这也会触发。
+
+```js
+const writer = getWritableStreamSomehow();
+const reader = getReadableStreamSomehow();
+writer.on('unpipe', (src) => {
+  console.log('Something has stopped piping into the writer.');
+  assert.equal(src, reader);
+});
+reader.pipe(writer);
+reader.unpipe(writer);
 ```
 
 
@@ -159,13 +218,15 @@ writable.on('unpipe', (src) => {
 
 对于`writable` 类它也有拥有诸多方法
 
-- **writable.cork()**		
+#### **writable.cork()**		
 
-  方法强制所有写入的数据都缓存在内存中。 当调用 writable.uncork() 或 writable.end() 方法时，缓冲的数据将被刷新。（主要目的是适应将几个小块快速连续写入流的情况）详见文档
+`writable.cork()` 方法强制所有写入的数据都缓存在内存中。 当调用 [`stream.uncork()`](http://nodejs.cn/api/stream.html#writableuncork) 或 [`stream.end()`](http://nodejs.cn/api/stream.html#writableendchunk-encoding-callback) 方法时，缓冲的数据将被刷新。
 
-- **writable.destroy()** 
+`writable.cork()` 的主要目的是适应将几个小块快速连续写入流的情况。 `writable.cork()` 不是立即将它们转发到底层目标，而是缓冲所有块，直到 `writable.uncork()` 被调用，如果存在，`writable.uncork()` 会将它们全部传给 `writable._writev()`。 这可以防止在等待处理第一个小块时正在缓冲数据的行头阻塞情况。 但是，在不实现 `writable._writev()` 的情况下使用 `writable.cork()` 可能会对吞吐量产生不利影响。
 
-  销毁流 可选地触发 'error' 事件
+#### **writable.destroy()** 
+
+ 销毁流 可选地触发 `'error'` 事件，并且触发 `'close'` 事件（除非 `emitClose` 设置为 `false`）。 在此调用之后，则可写流已结束，随后对 `write()` 或 `end()` 的调用将导致 `ERR_STREAM_DESTROYED` 错误。 这是销毁流的破坏性和直接的方式。 先前对 `write()` 的调用可能没有排空，并且可能触发 `ERR_STREAM_DESTROYED` 错误。 如果数据应该在关闭之前刷新，或者在销毁流之前等待 `'drain'` 事件，则使用 `end()` 而不是销毁。 
 
 ```js
 const { Writable } = require('stream');
@@ -194,23 +255,9 @@ myStream.write('foo', (error) => console.error(error.code));
 // ERR_STREAM_DESTROYED
 ```
 
-- **writable. destroyed()** 
+#### **writable. end()**
 
-   在调用 `writable.destro 之后是 `true`。 
-
-```js
-const { Writable } = require('stream');
-
-const myStream = new Writable();
-
-console.log(myStream.destroyed); // false
-myStream.destroy();
-console.log(myStream.destroyed); // true
-```
-
-- **writable. end()**
-
-  调用 writable.end() 方法表示不再有数据写入 Writable
+调用 writable.end() 方法表示不再有数据写入 Writable
 
 ```js
 // 语法：
@@ -230,48 +277,52 @@ file.end('world!');
 // 现在不允许写入更多！
 ```
 
-- **writable.setDefaultEncoding ()**
+#### **writable.setDefaultEncoding ()**
 
-  设置默认的编码(encoding)
+设置默认的编码(encoding)
 
-- **writable.uncork()**
+```js
+writable.setDefaultEncoding('utf-8') 
+```
 
-   `writable.uncork()` 方法会刷新自调用 `stream.cork()` 以来缓冲的所有数据。 
+#### **writable.uncork()**
 
-  当使用 [`writable.cork()`](http://nodejs.cn/api/stream.html#writablecork) 和 `writable.uncork()` 管理写入流的缓冲时，建议使用 `process.nextTick()` 延迟对 `writable.uncork()` 的调用。 这样做允许对在给定 Node.js 事件循环阶段中发生的所有 `writable.write()` 调用进行批处理。
+`writable.uncork()` 方法会刷新自调用 `stream.cork()` 以来缓冲的所有数据。 
 
-  ```js
-  stream.cork();
-  stream.write('some ');
-  stream.write('data ');
-  process.nextTick(() => stream.uncork());
-  ```
+当使用 [`writable.cork()`](http://nodejs.cn/api/stream.html#writablecork) 和 `writable.uncork()` 管理写入流的缓冲时，建议使用 `process.nextTick()` 延迟对 `writable.uncork()` 的调用。 这样做允许对在给定 Node.js 事件循环阶段中发生的所有 `writable.write()` 调用进行批处理。
 
-  如果在一个流上多次调用 [`writable.cork()`](http://nodejs.cn/api/stream.html#writablecork) 方法，则必须调用相同数量的 `writable.uncork()` 调用来刷新缓冲的数据。
+```js
+stream.cork();
+stream.write('some ');
+stream.write('data ');
+process.nextTick(() => stream.uncork());
+```
 
-  ```js
-  stream.cork();
-  stream.write('some ');
-  stream.cork();
-  stream.write('data ');
-  process.nextTick(() => {
-    stream.uncork();
-    // 在第二次调用 uncork() 之前不会刷新数据。
-    stream.uncork();
-  });
-  ```
+如果在一个流上多次调用 [`writable.cork()`](http://nodejs.cn/api/stream.html#writablecork) 方法，则必须调用相同数量的 `writable.uncork()` 调用来刷新缓冲的数据。
 
-  另见: [`writable.cork()`](http://nodejs.cn/api/stream.html#writablecork)。
-  
--  **writable.write(chunk[, encoding][, callback])** 
+```js
+stream.cork();
+stream.write('some ');
+stream.cork();
+stream.write('data ');
+process.nextTick(() => {
+  stream.uncork();
+  // 在第二次调用 uncork() 之前不会刷新数据。
+  stream.uncork();
+});
+```
 
-   将数据写入流中，返回Boolean， 如果流希望调用代码在继续写入其他数据之前等待 `'drain'` 事件被触发，则为 `false`；否则为 `true`。 
+另见: [`writable.cork()`](http://nodejs.cn/api/stream.html#writablecork)。
 
-   chunk：要写入的数据
+#### **writable.write(chunk[, encoding][, callback])** 
 
-   encoding：字节编码
+将数据写入流中，返回Boolean， 如果流希望调用代码在继续写入其他数据之前等待 `'drain'` 事件被触发，则为 `false`；否则为 `true`。 
 
-   callback：当刷新此块数据时的回调
+chunk：要写入的数据
+
+encoding：字节编码
+
+callback：当刷新此块数据时的回调
 
 ```js
 let fs = require("fs");
@@ -351,6 +402,20 @@ console.log("程序执行完毕");
 -   **writable.writableObjectMode** 
 
     给定 `Writable` 流的属性 `objectMode` 的获取器。 
+    
+    **writable. destroyed()** 
+    
+    在调用 `writable.destro 之后是 `true`。 
+    
+    ```js
+    const { Writable } = require('stream');
+    const myStream = new Writable();
+    console.log(myStream.destroyed); // false
+    myStream.destroy();
+    console.log(myStream.destroyed); // true
+    ```
+    
+    
 
 
 

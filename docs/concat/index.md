@@ -8,7 +8,15 @@
 
 [nginx文档](http://shouce.jb51.net/nginx/left.html)
 
+[redis SDK](http://www.redis.cn/clients.html#nodejs) ---
+[redis npm包文档](https://github.com/redis/node-redis) ---
+[ioredis npm包文档](https://github.com/luin/ioredis)
 
 [node文档](http://nodejs.cn/api/) --- 
 [koa文档](https://koa.bootcss.com/) --- 
 [express文档](https://www.expressjs.com.cn/) ---
+
+
+[mongodb开发者中心](https://www.mongodb.com/developer/) ---
+[mongodb原厂文档](https://www.mongodb.com/docs/manual/crud/) ---
+[mongoose文档](https://mongoosejs.com/docs/api.html#model_Model.bulkWrite)
