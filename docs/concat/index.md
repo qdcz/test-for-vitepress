@@ -15,3 +15,8 @@
 [node文档](http://nodejs.cn/api/) --- 
 [koa文档](https://koa.bootcss.com/) --- 
 [express文档](https://www.expressjs.com.cn/) ---
+
+
+[mongodb开发者中心](https://www.mongodb.com/developer/) ---
+[mongodb原厂文档](https://www.mongodb.com/docs/manual/crud/) ---
+[mongoose文档](https://mongoosejs.com/docs/api.html#model_Model.bulkWrite)
