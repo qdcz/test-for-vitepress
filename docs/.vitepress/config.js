@@ -6,6 +6,10 @@ export default defineConfig({
     description: '广天下之广,深天下之深',
     themeConfig: {
         logo: '/logo2.jpg',
+        repo: 'qdcz',
+        docsDir: 'docs',
+        // editLinks: true,
+        // editLinkText: 'Edit this page on GitHub',
         displayAllHeaders: true,
         search: true,
         searchPlaceholder: 'Search...',
@@ -33,13 +37,13 @@ export default defineConfig({
             { text: '临时存储', link: '/temporary/index' }
         ],
         smoothScroll: true,  // 平滑滚动
-        sidebar:"auto"
+        sidebar: "auto"
     },
     markdown: {
-        // extractHeaders: ['h2', 'h3', 'h4', 'h5', 'h6'],
+        toc: { includeLevel: [1, 2, 3] },
         lineNumbers: true,
         // options for markdown-it-anchor
-        anchor: { level: 4 },
+        anchor: { permalink: false },
         // options for markdown-it-toc
         config: (md) => {
             // use more markdown-it plugins!
