@@ -20,7 +20,7 @@
 
 [NodeJs](../service/NodeJs/index.md)
 
-[MongoDB](../service/NodeJs/index.md)
+[MongoDB](../service/Mongodb/index.md)
 
 [Mysql](../service/NodeJs/index.md)
 
