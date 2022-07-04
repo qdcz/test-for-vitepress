@@ -1,1 +1,0 @@
-import{_ as e,c as t,o as a}from"./app.89cb9de5.js";const f='{"title":"","description":"","frontmatter":{},"headers":[],"relativePath":"service/Mongodb/base.md","lastUpdated":1655735446840}',r={};function o(s,c,n,d,p,_){return a(),t("div")}var l=e(r,[["render",o]]);export{f as __pageData,l as default};
