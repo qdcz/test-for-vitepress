@@ -1,0 +1,1 @@
+import{_ as n,c as s,o as a,a as p}from"./app.cdd3be1a.js";const g='{"title":"log4js\u5305\u7528\u6CD5","description":"","frontmatter":{},"headers":[],"relativePath":"npmPackage/log4js.md","lastUpdated":1655275801019}',e={},t=p("",1),l=[t];function r(o,c,i,u,b,m){return a(),s("div",null,l)}var d=n(e,[["render",r]]);export{g as __pageData,d as default};

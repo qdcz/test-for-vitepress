@@ -1,1 +1,0 @@
-import{_ as e,c as t,o as a,b as n}from"./app.89cb9de5.js";const f='{"title":"Linux","description":"","frontmatter":{},"headers":[],"relativePath":"service/Linux/index.md","lastUpdated":1655134449381}',s={},o=n("h1",{id:"linux",tabindex:"-1"},"Linux",-1),i=[o];function r(c,d,_,p,l,x){return a(),t("div",null,i)}var h=e(s,[["render",r]]);export{f as __pageData,h as default};
