@@ -1,1 +1,0 @@
-import{_ as e,c as t,o as a}from"./app.63212dfc.js";const f='{"title":"","description":"","frontmatter":{},"headers":[],"relativePath":"service/Nginx/index.md","lastUpdated":1655134449381}',r={};function n(o,s,c,i,d,p){return a(),t("div")}var l=e(r,[["render",n]]);export{f as __pageData,l as default};
