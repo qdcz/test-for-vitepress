@@ -4,7 +4,46 @@
 
 
 
+```js
+let process = require('node:process');
 
+process.title = 'I am A master process';  // 给进程指定名称
+
+console.log("当前进程的环境变量",process.env)
+
+console.log(`
+    当前node版本:${process.version}
+    当前CPU的架构:${process.arch}
+    当前进程运行的操作系统平台:${process.platform}
+    当前进程的内存使用情况，单位bytes:
+        heapUsed(V8内存使用量):${process.memoryUsage().heapUsed}
+        heapTotal(V8内存量):${process.memoryUsage().heapTotal}
+        external(绑定到 V8 管理的 JavaScript 对象的 C++ 对象的内存使用量):${process.memoryUsage().external}
+        arrayBuffers(为 ArrayBuffer 和 SharedArrayBuffer 分配的内存，包括所有 Node.js Buffer):${process.memoryUsage().arrayBuffers}
+        rss(常驻集大小，是进程在主内存设备（即总分配内存的子集）中占用的空间量，包括所有 C++ 和 JavaScript 对象和代码):${process.memoryUsage().rss}
+    当前进程工作目录:${process.cwd()}
+    当前进程id:${process.pid}
+    当前进程对应的父进程:${process.ppid}
+    当前进程已运行时间:${process.uptime()}
+    当前进程高分辨时间:${process.hrtime()}
+    当前进程的名称 :${process.title}
+    Node.js 进程的可执行文件的绝对路径名:${process.execPath}
+`);
+
+
+
+/**
+ * 如果是携带命令启动 node index.js name=cxy,sex=gg
+ */
+
+console.log(`
+    获取启动该进程传入的参数:${process.argv}
+    =>Node的execPath（一般用不到）:${process.argv[0]}
+    =>被执行的JS文件路径（一般用不到）:${process.argv[1]}
+    =>真实传入命令的参数:${process.argv[2]}   ${process.argv[3]}   ${process.argv[4]}
+    =>真实传入命令的参数:${process.execArgv}
+`)
+```
 
 
 
@@ -35,6 +74,39 @@ node --harmony  index.js b=1 a=2
 >  Node.js上--harmony标志的当前行为是仅启用分段功能。毕竟，它现在是--es_staging的同义词。如上所述，这些是尚未被认为稳定的完整功能。如果您想安全玩耍，尤其是在生产环境中，请考虑删除此运行时标志，直到默认在V8上（因此，在Node.js上）将其发布。如果启用此功能，则在V8更改其语义以更严格地遵循标准的情况下，应该准备进一步进行Node.js升级以破坏代码。 
 
 ## 方法
+
+
+
+### .stdout.
+
+#### .stdout.write()
+
+console.log() 使用格式化调用 process.stdout.write 输出。
+
+```js
+Console.prototype.log = function() {
+  process.stdout.write(util.format.apply(this, arguments) + '\n');
+};
+```
+#### .stdout.fd
+
+ 该属性指的是 `process.stdout` 的底层文件描述符的值。 该值固定为 `1`。 在 [`Worker`](http://nodejs.cn/api/worker_threads.html#class-worker) 线程中，该字段不存在。 
+
+### .stderr.
+
+#### .stderr.write()
+
+console.error() 使用格式化调用 process.stderr.write 输出。
+
+```js
+Console.prototype.error = function() {
+  process.stderr.write(util.format.apply(this, arguments) + '\n');
+};
+```
+
+#### .stderr.fd
+
+ 该属性指的是 `process.stdout` 的底层文件描述符的值。 该值固定为 `2`。 在 [`Worker`](http://nodejs.cn/api/worker_threads.html#class-worker) 线程中，该字段不存在。 
 
 ### .memoryUsage()
 
