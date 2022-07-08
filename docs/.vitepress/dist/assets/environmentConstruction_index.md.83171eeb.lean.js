@@ -1,0 +1,1 @@
+import{_ as e,c as t,o,a as n}from"./app.1760f824.js";const f='{"title":"doc","description":"","frontmatter":{},"headers":[{"level":2,"title":"doc","slug":"doc"}],"relativePath":"environmentConstruction/index.md","lastUpdated":1657266173725}',a={},s=n("",5),c=[s];function r(_,d,i,l,p,h){return o(),t("div",null,c)}var x=e(a,[["render",r]]);export{f as __pageData,x as default};

@@ -1,0 +1,1 @@
+import{_ as t,c as e,o as B,a as s}from"./app.1760f824.js";const T='{"title":"","description":"","frontmatter":{},"headers":[],"relativePath":"service/Linux/\u5B58\u50A8\u5355\u4F4D.md","lastUpdated":1656302065225}',p={},_=s("",10),a=[_];function o(r,c,n,i,d,y){return B(),e("div",null,a)}var f=t(p,[["render",o]]);export{T as __pageData,f as default};

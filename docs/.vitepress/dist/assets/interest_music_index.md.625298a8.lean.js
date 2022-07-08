@@ -1,0 +1,2 @@
+import{_ as t,c as s,o as n,b as e}from"./app.1760f824.js";const h='{"title":"","description":"","frontmatter":{},"headers":[],"relativePath":"interest/music/index.md","lastUpdated":1653059597226}',o={},a=e("p",null,"\u7EAF",-1),r=e("pre",null,[e("code",null,`\u4EA1\u7075\u5E8F\u66F2
+`)],-1),c=[a,r];function d(_,i,l,p,u,f){return n(),s("div",null,c)}var x=t(o,[["render",d]]);export{h as __pageData,x as default};
