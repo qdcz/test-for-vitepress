@@ -26,7 +26,7 @@
 
 [express](../service/NodeJs/index.md)
 
-[koa](../service/NodeJs/index.md)
+[koa](../service/koa/index.md)
 
 [egg](../service/NodeJs/index.md)
 
