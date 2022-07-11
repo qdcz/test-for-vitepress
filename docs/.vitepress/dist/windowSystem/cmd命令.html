@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>netstat | 澜漾</title>
+    <meta name="description" content="广天下之广,深天下之深">
+    <link rel="stylesheet" href="/assets/style.49f07aca.css">
+    <link rel="modulepreload" href="/assets/Home.83738dfc.js">
+    <link rel="modulepreload" href="/assets/app.f3070ad9.js">
+    <link rel="modulepreload" href="/assets/windowSystem_cmd命令.md.e4ff76d1.lean.js">
+    
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+  <meta name="keywords" content="澜漾">
+  <link rel="icon" href="/favicon.ico">
+  <link rel="stylesheet" href="https://lib.baomitu.com/gitalk/1.7.0/gitalk.min.css">
+  <script src="https://lib.baomitu.com/gitalk/1.7.0/gitalk.min.js"></script>
+  <script src="https://lib.baomitu.com/axios/0.21.1/axios.js"></script>
+  <meta name="twitter:title" content="netstat | 澜漾">
+  <meta property="og:title" content="netstat | 澜漾">
+  </head>
+  <body>
+    <div id="app"><!--[--><div class="theme"><header class="nav-bar" data-v-d186b2c2><div class="sidebar-button" data-v-d186b2c2><svg class="icon" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" viewBox="0 0 448 512"><path fill="currentColor" d="M436 124H12c-6.627 0-12-5.373-12-12V80c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12z" class></path></svg></div><a class="nav-bar-title" href="/" aria-label="澜漾, back to home" data-v-d186b2c2 data-v-34a93bc8><img class="logo" src="/logo2.jpg" alt="Logo" data-v-34a93bc8> 澜漾</a><div class="flex-grow" data-v-d186b2c2></div><div class="nav" data-v-d186b2c2><nav class="nav-links" data-v-d186b2c2 data-v-30b7e073><!--[--><div class="item" data-v-30b7e073><div class="nav-link" data-v-30b7e073 data-v-711da5ba><a class="item" href="/" data-v-711da5ba>🏠 首页 <!----></a></div></div><div class="item" data-v-30b7e073><div class="nav-link" data-v-30b7e073 data-v-711da5ba><a class="item" href="/home/home" data-v-711da5ba>码上行动 <!----></a></div></div><div class="item" data-v-30b7e073><div class="nav-link" data-v-30b7e073 data-v-711da5ba><a class="item" href="/IDEShortcutKey/WebStorm" data-v-711da5ba>编辑器快捷键 <!----></a></div></div><div class="item" data-v-30b7e073><div class="nav-link" data-v-30b7e073 data-v-711da5ba><a class="item" href="/environmentConstruction/index" data-v-711da5ba>环境搭建 <!----></a></div></div><div class="item" data-v-30b7e073><div class="nav-link" data-v-30b7e073 data-v-711da5ba><a class="item active" href="/windowSystem/index" data-v-711da5ba>window <!----></a></div></div><div class="item" data-v-30b7e073><div class="nav-link" data-v-30b7e073 data-v-711da5ba><a class="item" href="/service/Linux/index" data-v-711da5ba>linux <!----></a></div></div><div class="item" data-v-30b7e073><div class="nav-link" data-v-30b7e073 data-v-711da5ba><a class="item" href="/about/index" data-v-711da5ba>🔨关于 <!----></a></div></div><div class="item" data-v-30b7e073><div class="nav-link" data-v-30b7e073 data-v-711da5ba><a class="item" href="/concat/index" data-v-711da5ba>👫友情链接 <!----></a></div></div><div class="item" data-v-30b7e073><div class="nav-link" data-v-30b7e073 data-v-711da5ba><a class="item" href="/temporary/index" data-v-711da5ba>临时存储 <!----></a></div></div><!--]--><!----><div class="item" data-v-30b7e073><div class="nav-link" data-v-30b7e073 data-v-711da5ba><a class="item isExternal" href="https://github.com/qdcz" target="_blank" rel="noopener noreferrer" data-v-711da5ba>GitHub <svg class="icon outbound" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewbox="0 0 100 100" width="15" height="15" data-v-711da5ba><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path><polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></div></div></nav></div><!--[--><!--]--></header><aside class="sidebar" data-v-7e9d9da8><nav class="nav-links nav" data-v-7e9d9da8 data-v-30b7e073><!--[--><div class="item" data-v-30b7e073><div class="nav-link" data-v-30b7e073 data-v-711da5ba><a class="item" href="/" data-v-711da5ba>🏠 首页 <!----></a></div></div><div class="item" data-v-30b7e073><div class="nav-link" data-v-30b7e073 data-v-711da5ba><a class="item" href="/home/home" data-v-711da5ba>码上行动 <!----></a></div></div><div class="item" data-v-30b7e073><div class="nav-link" data-v-30b7e073 data-v-711da5ba><a class="item" href="/IDEShortcutKey/WebStorm" data-v-711da5ba>编辑器快捷键 <!----></a></div></div><div class="item" data-v-30b7e073><div class="nav-link" data-v-30b7e073 data-v-711da5ba><a class="item" href="/environmentConstruction/index" data-v-711da5ba>环境搭建 <!----></a></div></div><div class="item" data-v-30b7e073><div class="nav-link" data-v-30b7e073 data-v-711da5ba><a class="item active" href="/windowSystem/index" data-v-711da5ba>window <!----></a></div></div><div class="item" data-v-30b7e073><div class="nav-link" data-v-30b7e073 data-v-711da5ba><a class="item" href="/service/Linux/index" data-v-711da5ba>linux <!----></a></div></div><div class="item" data-v-30b7e073><div class="nav-link" data-v-30b7e073 data-v-711da5ba><a class="item" href="/about/index" data-v-711da5ba>🔨关于 <!----></a></div></div><div class="item" data-v-30b7e073><div class="nav-link" data-v-30b7e073 data-v-711da5ba><a class="item" href="/concat/index" data-v-711da5ba>👫友情链接 <!----></a></div></div><div class="item" data-v-30b7e073><div class="nav-link" data-v-30b7e073 data-v-711da5ba><a class="item" href="/temporary/index" data-v-711da5ba>临时存储 <!----></a></div></div><!--]--><!----><div class="item" data-v-30b7e073><div class="nav-link" data-v-30b7e073 data-v-711da5ba><a class="item isExternal" href="https://github.com/qdcz" target="_blank" rel="noopener noreferrer" data-v-711da5ba>GitHub <svg class="icon outbound" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewbox="0 0 100 100" width="15" height="15" data-v-711da5ba><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path><polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></div></div></nav><!--[--><!--]--><!----><!--[--><!--]--></aside><div class="sidebar-mask"></div><main class="page" data-v-f058c2ee><div class="container" data-v-f058c2ee><!--[--><!--]--><div style="position:relative;" class="content" data-v-f058c2ee><div><h3 id="netstat" tabindex="-1">netstat</h3><div class="language-shell"><pre><code><span class="token operator">&gt;</span>netstat -ano                 查看所有端口占用情况
+
+<span class="token operator">&gt;</span>netstat -ano<span class="token operator">|</span>findstr <span class="token number">8689</span>    查询指定端口占用情况
+    C:<span class="token punctuation">\</span>Users<span class="token punctuation">\</span>LEGION<span class="token operator">&gt;</span>netstat -ano<span class="token operator">|</span>findstr <span class="token number">8689</span>
+    TCP    <span class="token number">0.0</span>.0.0:8689           <span class="token number">0.0</span>.0.0:0              LISTENING       <span class="token number">27872</span>
+    TCP    <span class="token punctuation">[</span>::<span class="token punctuation">]</span>:8689              <span class="token punctuation">[</span>::<span class="token punctuation">]</span>:0                 LISTENING       <span class="token number">27872</span>
+   
+<span class="token operator">&gt;</span>tasklist<span class="token operator">|</span>findstr <span class="token number">27872</span>  查看这个pid的 图像名<span class="token punctuation">(</span>进程名<span class="token punctuation">)</span>、PID、会话名、会话<span class="token comment">#和内存。</span>
+
+<span class="token operator">&gt;</span>taskkill /f /t /im node.exe 结束node.exe的进程及相关子进程
+  /f 是强制停止
+  /t 是结束子进程
+  /im 是结束进程
+</code></pre></div><h3 id="taskkill" tabindex="-1">taskkill</h3><div class="language-shell"><pre><code>/S    system           指定要连接的远程系统。
+
+    /U    <span class="token punctuation">[</span>domain<span class="token punctuation">\</span><span class="token punctuation">]</span>user    指定应该在哪个用户上下文执行这个命令。
+
+    /P    <span class="token punctuation">[</span>password<span class="token punctuation">]</span>       为提供的用户上下文指定密码。如果忽略，提示
+                           输入。
+
+    /FI   filter           应用筛选器以选择一组任务。
+                           允许使用 <span class="token string">&quot;*&quot;</span>。例如，映像名称 eq acme*
+
+    /PID  processid        指定要终止的进程的 PID。
+                           使用 TaskList 取得 PID。
+
+    /IM   imagename        指定要终止的进程的映像名称。通配符 <span class="token string">&#39;*&#39;</span>可用来
+                           指定所有任务或映像名称。
+
+    /T                     终止指定的进程和由它启用的子进程。
+
+    /F                     指定强制终止进程。
+
+    /?                     显示帮助消息。
+
+筛选器:
+筛选器名      有效运算符                有效值
+-----------   ---------------           -------------------------
+STATUS        eq, ne                    RUNNING <span class="token operator">|</span>
+NOT RESPONDING <span class="token operator">|</span> UNKNOWN
+IMAGENAME     eq, ne                    映像名称
+PID           eq, ne, gt, lt, ge, le    PID 值
+<span class="token environment constant">SESSION</span>       eq, ne, gt, lt, ge, le    会话编号。
+CPUTIME       eq, ne, gt, lt, ge, le    CPU 时间，格式为
+hh:mm:ss。
+hh - 时，
+mm - 分，ss - 秒
+MEMUSAGE      eq, ne, gt, lt, ge, le    内存使用量，单位为 KB
+USERNAME      eq, ne                    用户名，格式为 <span class="token punctuation">[</span>domain<span class="token punctuation">\</span><span class="token punctuation">]</span>user
+MODULES       eq, ne                    DLL 名称
+SERVICES      eq, ne                    服务名称
+WINDOWTITLE   eq, ne                    窗口标题
+
+    说明
+    ----
+    <span class="token number">1</span><span class="token punctuation">)</span> 只有在应用筛选器的情况下，/IM 切换才能使用通配符 <span class="token string">&#39;*&#39;</span>。
+    <span class="token number">2</span><span class="token punctuation">)</span> 远程进程总是要强行 <span class="token punctuation">(</span>/F<span class="token punctuation">)</span> 终止。
+    <span class="token number">3</span><span class="token punctuation">)</span> 当指定远程机器时，不支持 <span class="token string">&quot;WINDOWTITLE&quot;</span> 和 <span class="token string">&quot;STATUS&quot;</span> 筛选器。
+
+例如:
+TASKKILL /IM notepad.exe
+TASKKILL /PID <span class="token number">1230</span> /PID <span class="token number">1241</span> /PID <span class="token number">1253</span> /T
+TASKKILL /F /IM cmd.exe /T
+TASKKILL /F /FI <span class="token string">&quot;PID ge 1000&quot;</span> /FI <span class="token string">&quot;WINDOWTITLE ne untitle*&quot;</span>
+TASKKILL /F /FI <span class="token string">&quot;USERNAME eq NT AUTHORITY\SYSTEM&quot;</span> /IM notepad.exe
+TASKKILL /S system /U 域<span class="token punctuation">\</span>用户名 /FI <span class="token string">&quot;用户名 ne NT*&quot;</span> /IM *
+TASKKILL /S system /U username /P password /FI <span class="token string">&quot;IMAGENAME eq note*&quot;</span>
+</code></pre></div></div></div><footer class="page-footer" data-v-f058c2ee data-v-4d1950e8><div class="edit" data-v-4d1950e8><div class="edit-link" data-v-4d1950e8 data-v-d1f281aa><!----></div></div><div class="updated" data-v-4d1950e8><p class="last-updated" data-v-4d1950e8 data-v-01ad1c9a><span class="prefix" data-v-01ad1c9a>最近更新时间:</span><span class="datetime" data-v-01ad1c9a></span></p></div></footer><!----><!--[--><!--]--></div></main></div><!----><!--]--></div>
+    <script>__VP_HASH_MAP__ = JSON.parse("{\"ideshortcutkey_webstorm.md\":\"18c6c91e\",\"about_index.md\":\"266d606d\",\"client_electron_base.md\":\"73b81831\",\"client_electron_index.md\":\"63ff8f07\",\"client_typescript_index.md\":\"2609fcb2\",\"client_css_滚动条.md\":\"704dd147\",\"client_javascript_xmlhttprequest.md\":\"ea195791\",\"client_javascript_base.md\":\"fd1f6794\",\"client_javascript_index.md\":\"eece4482\",\"client_javascript_函数.md\":\"bf6b65b9\",\"concat_index.md\":\"a782833f\",\"environmentconstruction_index.md\":\"b7b45d45\",\"environmentconstruction_linux.md\":\"491489b6\",\"environmentconstruction_mongodb离线安装.md\":\"9d0f7670\",\"environmentconstruction_mysql离线安装.md\":\"a3088b54\",\"environmentconstruction_nginx.md\":\"f2832f95\",\"environmentconstruction_redis离线安装.md\":\"29fa9b75\",\"home_home.md\":\"38f1fc65\",\"index.md\":\"b65b705c\",\"interest_drug_index.md\":\"90a8b05a\",\"interest_music_index.md\":\"3981382e\",\"npmpackage_index.md\":\"93ce991e\",\"npmpackage_log4js.md\":\"6d781e35\",\"qdcz-note.md\":\"4557beaf\",\"service_linux_index.md\":\"a9464d28\",\"service_linux_linux.md\":\"4e8c9496\",\"service_linux_存储单位.md\":\"1e89b4f1\",\"service_mongodb_base.md\":\"6ca155d3\",\"service_mongodb_index.md\":\"4208220d\",\"service_mongodb_建立ttl索引.md\":\"53de734b\",\"service_nginx_index.md\":\"11980c9c\",\"service_nginx_window版本.md\":\"fe4f4779\",\"service_nodejs_base.md\":\"adf20931\",\"service_nodejs_buffer.md\":\"31afcf78\",\"service_nodejs_child_process.md\":\"2e9c372c\",\"service_nodejs_index.md\":\"6c6edbaf\",\"service_nodejs_process.md\":\"82deed28\",\"service_nodejs_stream.md\":\"18fec455\",\"service_nodejs_工具函数.md\":\"0a5d610f\",\"service_nodejs_文件描述符.md\":\"d3c6d470\",\"service_nodejs_日志系统记录.md\":\"6aca9a07\",\"service_nodejs_混淆编译打包.md\":\"33ae689f\",\"service_nodejs_锁.md\":\"6d1431a0\",\"service_koa_index.md\":\"8c028d04\",\"service_koa_洋葱模型.md\":\"26a07483\",\"softwareengineering_面向对象编程.md\":\"7d674901\",\"temporary_index.md\":\"5a23302e\",\"temporary_recentplan.md\":\"4a33a5c9\",\"temporary_websocketforauthbynodejs.md\":\"2ff12679\",\"temporary_work_day_work_report.md\":\"b2cedae0\",\"temporary_work_todayplan.md\":\"b7eb1c2b\",\"temporary_work_weekly_work_report.md\":\"26f025a0\",\"windowsystem_cmd命令.md\":\"e4ff76d1\",\"windowsystem_index.md\":\"ef9c447f\",\"windowsystem_创建本地共享文件夹.md\":\"76d9012b\"}")</script>
+    <script type="module" async src="/assets/app.f3070ad9.js"></script>
+    
+  </body>
+</html>

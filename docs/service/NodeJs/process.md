@@ -75,7 +75,11 @@ node --harmony  index.js b=1 a=2
 
 ## 方法
 
+### . stdin
 
+#### .stdin.td
+
+ 该属性指的是 `process.stdout` 的底层文件描述符的值。 该值固定为 `0`。 在 [`Worker`](http://nodejs.cn/api/worker_threads.html#class-worker) 线程中，该字段不存在。 
 
 ### .stdout.
 
@@ -358,3 +362,5 @@ Windows 不支持信号，因此没有等价的使用信号来终止，但 Node.
 
 - 发送 `SIGINT`、`SIGTERM`、和 `SIGKILL` 会导致目标进程无条件的终止，之后子进程会报告进程被信号终止。
 - 发送信号 `0` 可以作为独立于平台的方式来测试进程是否存在。
+
+# [......子进程](./child_process)
