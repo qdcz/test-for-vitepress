@@ -26,7 +26,7 @@ spawn、fork、exec、execFile都遵循异步编程模式，每个方法都返�
 ### exec()
  语法：
 
-```shell
+```html
 options <Object>
     cwd <string> | <URL> 子进程的当前工作目录。 默认值: process.cwd()。
     env <Object> 环境变量键值对。 默认值: process.env。
@@ -102,7 +102,11 @@ controller.abort();
 
 ### .execFile()
 
-```shell
+child_process.execFile() 函数与 child_process.exec() 类似，不同之处在于它默认不衍生 shell。 而是，指定的可执行文件 file 直接作为新进程衍生，使其比 child_process.exec() 略有效率。
+
+支持与 child_process.exec() 相同的选项。 由于未衍生 shell，因此不支持 I/O 重定向和文件通配等行为。
+
+```html
 file <string> 要运行的可执行文件的名称或路径。
 args <string[]> 字符串参数列表。
 options <Object>
@@ -124,3 +128,117 @@ callback <Function> 进程终止时使用输出调用。
     stderr <string> | <Buffer>
 返回: <ChildProcess>
 ```
+
+
+```js
+/**
+ * 首例 回调方式
+ */
+const { execFile } = require('node:child_process');
+const child = execFile('node', ['--version'], (error, stdout, stderr) => {
+  if (error) {
+    throw error;
+  }
+  console.log(stdout);
+});
+
+
+
+/**
+ * 异步转同步模式
+ */
+const util = require('node:util');
+const execFile = util.promisify(require('node:child_process').execFile);
+async function getVersion() {
+  const { stdout } = await execFile('node', ['--version']);
+  console.log(stdout);
+}
+getVersion();
+
+
+
+
+// 如果启用了 shell 选项，则请勿将未经处理的用户输入传递给此函数。 任何包含 shell 元字符的输入都可用于触发任意命令执行。
+// 如果启用了 signal 选项，则在相应的 AbortController 上调用 .abort() 与在子进程上调用 .kill() 类似，只是传给回调的错误将是 AbortError：
+const { execFile } = require('node:child_process');
+const controller = new AbortController();
+const { signal } = controller;
+const child = execFile('node', ['--version'], { signal }, (error) => {
+  console.log(error); // 一个 AbortError
+});
+controller.abort();
+```
+
+
+### .fork()
+
+```html
+modulePath <string> | <URL> 要在子进程中运行的模块。
+args <string[]> 字符串参数列表。
+options <Object>
+    cwd <string> | <URL> 子进程的当前工作目录。
+    detached <boolean> 准备子进程独立于其父进程运行。 具体行为取决于平台，参见 options.detached。
+    env <Object> 环境变量键值对。 默认值: process.env。
+    execPath <string> 用于创建子进程的可执行文件。
+    execArgv <string[]> 传给可执行文件的字符串参数列表。 默认值: process.execArgv。
+    gid <number> 设置进程的群组标识（参见 setgid(2)）。
+    serialization <string> 指定用于在进程之间发送消息的序列化类型。 可能的值为 'json' 和 'advanced'。 有关更多详细信息，请参阅高级序列化。 默认值: 'json'。
+    signal <AbortSignal> 允许使用中止信号关闭子进程。
+    killSignal <string> | <integer> 当衍生的进程将被超时或中止信号杀死时要使用的信号值。 默认值: 'SIGTERM'。
+    silent <boolean> 如果为 true，则子进程的标准输入、标准输出和标准错误将通过管道传输到父进程，否则它们将从父进程继承，有关详细信息，请参阅 child_process.spawn() 的 stdio 的 'pipe' 和 'inherit' 选项。 默认值: false。
+    stdio <Array> | <string> 参见 child_process.spawn() 的 stdio。 提供此选项时，它会覆盖 silent。 如果使用数组变体，则它必须恰好包含一个值为 'ipc' 的条目，否则将抛出错误。 例如 [0, 1, 2, 'ipc']。
+    uid <number> 设置进程的用户标识（参见 setuid(2)）。
+    windowsVerbatimArguments <boolean> 在 Windows 上不为参数加上引号或转义。 在 Unix 上被忽略。 默认值: false。
+    timeout <number> 允许进程运行的最长时间（以毫秒为单位）。 默认值: undefined。
+返回: <ChildProcess>
+```
+
+child_process.fork() 方法是 child_process.spawn() 的特例，专门用于衍生新的 Node.js 进程。 与 child_process.spawn() 一样，返回 ChildProcess 对象。 返回的 ChildProcess 将有额外的内置通信通道，允许消息在父进程和子进程之间来回传递。 详见 subprocess.send()。
+
+请记住，衍生的 Node.js 子进程独立于父进程，除了两者之间建立的 IPC 通信通道。 每个进程都有自己的内存，具有自己的 V8 实例。 由于需要额外的资源分配，不建议衍生大量子 Node.js 进程。
+
+默认情况下，child_process.fork() 将使用父进程的 process.execPath 衍生新的 Node.js 实例。 options 对象中的 execPath 属性允许使用替代的执行路径。
+
+使用自定义 execPath 启动的 Node.js 进程将使用在子进程上使用环境变量 NODE_CHANNEL_FD 标识的文件描述符与父进程通信。
+
+与 fork(2) POSIX 系统调用不同，child_process.fork() 不克隆当前进程。
+
+child_process.fork() 不支持 child_process.spawn() 中可用的 shell 选项，如果设置将被忽略。
+
+如果启用了 signal 选项，则在相应的 AbortController 上调用 .abort() 与在子进程上调用 .kill() 类似，只是传给回调的错误将是 AbortError：
+
+
+```js
+console.log("我被创建了N次")
+if (process.argv[2] === 'child') {
+    setTimeout(() => {
+        console.log(`Hello from ${process.argv[2]}!`);
+    }, 1_000);
+} else {
+    const { fork } = require('child_process');
+    const controller = new AbortController();
+    const { signal } = controller;
+    const child = fork(__filename, ['child'], { signal });
+    child.on('error', (err) => {
+        // 如果控制器中止，则这将在 err 为 AbortError 的情况下被调用
+    });
+    controller.abort(); // 停止子进程
+}
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
