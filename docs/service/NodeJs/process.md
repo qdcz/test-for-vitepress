@@ -73,7 +73,165 @@ node --harmony  index.js b=1 a=2
 
 >  Node.js上--harmony标志的当前行为是仅启用分段功能。毕竟，它现在是--es_staging的同义词。如上所述，这些是尚未被认为稳定的完整功能。如果您想安全玩耍，尤其是在生产环境中，请考虑删除此运行时标志，直到默认在V8上（因此，在Node.js上）将其发布。如果启用此功能，则在V8更改其语义以更严格地遵循标准的情况下，应该准备进一步进行Node.js升级以破坏代码。 
 
+### .allowedNodeEnvironmentFlags
+
+```html
+<Set>
+```
+
+`process.allowedNodeEnvironmentFlags` 属性是 [`NODE_OPTIONS`](http://nodejs.cn/api/cli.html#node_optionsoptions) 环境变量中允许的特殊的只读 `Set` 标志。
+
+`process.allowedNodeEnvironmentFlags` 继承了 `Set`，但覆盖了 `Set.prototype.has` 以识别几种不同的可能标志表示。 在以下情况下，`process.allowedNodeEnvironmentFlags.has()` 将返回 `true`：
+
+- 标志可以省略前导单（`-`）或双（`--`）破折号；例如，`inspect-brk` 代表 `--inspect-brk`，或 `r` 代表 `-r`。
+- 传给 V8 的标志（如 `--v8-options` 中所列）可能会替换一个或多个_非前导_破折号作为下划线，反之亦然；例如，`--perf_basic_prof`、`--perf-basic-prof`、`--perf_basic-prof` 等。
+- 标志可能包含一个或多个等于 (`=`) 字符；在第一个等号之后并包括在内的所有字符都将被忽略；例如，`--stack-trace-limit=100`。
+- 标志_必须_在 [`NODE_OPTIONS`](http://nodejs.cn/api/cli.html#node_optionsoptions) 中是允许的。
+
+在 `process.allowedNodeEnvironmentFlags` 上迭代时，标志只会出现_一次_；每个都以一个或多个破折号开头。 传给 V8 的标志将包含下划线而不是非前导破折号：
+
+```js
+import { allowedNodeEnvironmentFlags } from 'node:process';
+
+allowedNodeEnvironmentFlags.forEach((flag) => {
+  // -r
+  // --inspect-brk
+  // --abort_on_uncaught_exception
+  // ...
+});
+```
+
+`process.allowedNodeEnvironmentFlags` 的方法 `add()`、`clear()` 和 `delete()` 什么都不做，会静默失败。
+
+如果 Node.js 编译时_没有_ [`NODE_OPTIONS`](http://nodejs.cn/api/cli.html#node_optionsoptions) 支持（显示在 [`process.config`](http://nodejs.cn/api/process.html#processconfig) 中），那么 `process.allowedNodeEnvironmentFlags` 将包含_本来_允许的内容。
+
+### .arch
+
+```html
+<string>
+```
+
+ 为其编译 Node.js 二进制文件的操作系统 CPU 架构。 可能的值为：`'arm'`、`'arm64'`、`'ia32'`、`'mips'`、`'mipsel'`、`'ppc'`、`'ppc64'`、`'s390'`、`'s390x'`、以及 `'x64'`。 
+
+### .argv
+
+```html
+<string[]>
+```
+
+`process.argv` 属性返回数组，其中包含启动 Node.js 进程时传入的命令行参数。 第一个元素将是 [`process.execPath`](http://nodejs.cn/api/process.html#processexecpath)。 如果需要访问 `argv[0]` 的原始值，请参阅 `process.argv0`。 第二个元素将是正在执行的 JavaScript 文件的路径。 其余元素将是任何其他命令行参数。
+
+例如，假设 `process-args.js` 有以下脚本：
+
+```js
+import { argv } from 'node:process';
+
+// 打印 process.argv
+argv.forEach((val, index) => {
+  console.log(`${index}: ${val}`);
+});
+```
+
+```shell
+以如下方式启动 Node.js 进程：
+$ node process-args.js one two=three four
+
+
+将生成输出：
+
+0: /usr/local/bin/node
+1: /Users/mjr/work/node/process-args.js
+2: one
+3: two=three
+4: four
+```
+
+### .channel
+
+```html
+<Object>
+```
+
+ 如果 Node.js 进程是使用 IPC 通道衍生（参见[子进程](http://nodejs.cn/api/child_process.html)文档），则 `process.channel` 属性是对 IPC 通道的引用。 如果不存在 IPC 通道，则此属性为 `undefined`。 
+
+### .config
+
+```html
+<Object>
+```
+
+`process.config` 属性返回 `Object`，其中包含用于编译当前 Node.js 可执行文件的配置选项的 JavaScript 表示。 这与运行 `./configure` 脚本时生成的 `config.gypi` 文件相同。
+
+可能的输出示例如下所示：
+
+```js
+{
+  target_defaults:
+   { cflags: [],
+     default_configuration: 'Release',
+     defines: [],
+     include_dirs: [],
+     libraries: [] },
+  variables:
+   {
+     host_arch: 'x64',
+     napi_build_version: 5,
+     node_install_npm: 'true',
+     node_prefix: '',
+     node_shared_cares: 'false',
+     node_shared_http_parser: 'false',
+     node_shared_libuv: 'false',
+     node_shared_zlib: 'false',
+     node_use_dtrace: 'false',
+     node_use_openssl: 'true',
+     node_shared_openssl: 'false',
+     strict_aliasing: 'true',
+     target_arch: 'x64',
+     v8_use_snapshot: 1
+   }
+}
+```
+
+`process.config` 属性是**非**只读的，并且生态系统中存在已知扩展、修改或完全替换 `process.config` 值的现有模块。
+
+修改 `process.config` 属性或 `process.config` 对象的任何子属性已被弃用。 在未来的版本中，`process.config` 将变为只读。
+
+### .connected
+
+```html
+<boolean>
+```
+
+如果 Node.js 进程使用 IPC 通道衍生（参见[子进程](http://nodejs.cn/api/child_process.html)和[集群](http://nodejs.cn/api/cluster.html)文档），则只要 IPC 通道连接，`process.connected` 属性将返回 `true`，并在调用 `process.disconnect()` 后返回 `false`。
+
+一旦 `process.connected` 为 `false`，就不能再使用 `process.send()` 通过 IPC 通道发送消息
+
+
+
+### .debugPort
+
+```html
+<number>
+```
+
+ 启用时 Node.js 调试器使用的端口。 
+
+```js
+const process = require('node:process');
+process.debugPort = 5858;
+```
+
+
+
 ## 方法
+
+### .cwd()
+
+```html
+返回: <string>
+```
+
+ `process.cwd()` 方法返回 Node.js 进程的当前工作目录。 
 
 ### . stdin
 
@@ -140,6 +298,75 @@ rss(常驻集大小，是进程在主内存设备（即总分配内存的子集�
 ### .memoryUsage.rss()
 
  与 `process.memoryUsage()` 提供的 `rss` 属性值相同，但 `process.memoryUsage.rss()` 更快。 
+
+### .channel.ref()
+
+ 如果 Node.js 进程是使用 IPC 通道衍生（参见[子进程](http://nodejs.cn/api/child_process.html)文档），则 `process.channel` 属性是对 IPC 通道的引用。 如果不存在 IPC 通道，则此属性为 `undefined`。 
+
+### .channel.unref()
+
+此方法使 IPC 通道不会保持进程的事件循环运行，并且即使在通道打开时也让它完成。
+
+通常，这是通过 `process` 对象上的 `'disconnect'` 和 `'message'` 监听器的数量来管理的。 但是，此方法可用于显式请求特定行为。
+
+### .chdir(directory)
+
+```html
+directory <string>
+```
+
+ `process.chdir()` 方法更改 Node.js 进程的当前工作目录，如果失败则抛出异常（例如，如果指定的 `directory` 不存在）。  此特性在 [`Worker`](http://nodejs.cn/api/worker_threads.html#class-worker) 线程中不可用。 
+
+### .abort()
+
+process.abort() 方法会导致 Node.js 进程立即退出并生成一个核心文件。
+
+此特性在 Worker 线程中不可用。
+
+### .argv0()
+
+```html
+<string>
+```
+
+ `process.argv0` 属性存储了 Node.js 启动时传入的 `argv[0]` 原始值的只读副本。 
+
+```js
+$ bash -c 'exec -a customArgv0 ./node'
+> process.argv[0]
+'/Volumes/code/external/node/out/Release/node'
+> process.argv0
+'customArgv0'
+```
+
+### .cpuUsage([previousValue])
+
+```html
+previousValue <Object> 先前调用 process.cpuUsage() 的返回值
+返回: <Object>
+    user <integer>
+    system <integer>
+```
+
+`process.cpuUsage()` 方法在具有属性 `user` 和 `system` 的对象中返回当前进程的用户和系统 CPU 时间使用情况，其值为微秒值（百万分之一秒）。 这些值分别测量在用户和系统代码中花费的时间，如果多个 CPU 内核为此进程执行工作，则最终可能会大于实际经过的时间。
+
+先前调用 `process.cpuUsage()` 的结果可以作为参数传给函数，以获取差异读数。
+
+```js
+const { cpuUsage } = require('node:process');
+
+const startUsage = cpuUsage();
+// { user: 38579, system: 6986 }
+
+// 使 CPU 旋转 500 毫秒
+const now = Date.now();
+while (Date.now() - now < 500);
+
+console.log(cpuUsage(startUsage));
+// { user: 514883, system: 11226 }
+```
+
+
 
 ## 事件
 
@@ -362,5 +589,9 @@ Windows 不支持信号，因此没有等价的使用信号来终止，但 Node.
 
 - 发送 `SIGINT`、`SIGTERM`、和 `SIGKILL` 会导致目标进程无条件的终止，之后子进程会报告进程被信号终止。
 - 发送信号 `0` 可以作为独立于平台的方式来测试进程是否存在。
+
+
+
+啊
 
 # [......子进程](./child_process)
