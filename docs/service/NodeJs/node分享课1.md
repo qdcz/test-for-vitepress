@@ -89,13 +89,49 @@
 
 ## 环境搭建与包管理器
 
-你会不会有这样的需求，想在一台电脑上使用多个node版本。
+你会不会有这样的需求，想在一台电脑上使用多个node版本。但是如何取维护多个版本呢，比较土的方法是创建多个虚拟机，然后在每台机子内装不同的node版本。
 
+在社区有 n、nvm、nvs 三种方法来对 Node.js 的版本进行管理。
+
+以下就只对一种进行简单介绍：
+
+比如：
+
+```shell
+nvm install @指定版本       安装指定版本
+nvm list                    查看所有已安装的版本
+nvm use 15.0.0              切换到指定版本
+
+```
+
+在安装node的时候  会给你自动安装npm（包管理器又称软件包管理系统），允许我们为 Node.js 安装各种模块，这个包管理器为我们提供了安装、删除等其它命令来管理模块
+
+在国内有时候受限于网络因素的影响，通常在安装一个包管理器之前可以切换为 taobao 源，是的速度可以更快，但是要注意如果是私有模块在 NPM 官方的，则必须切换为官方源，否则会出现 404 错误。
+
+```js
+// 换源操作
+npm config get registry                                     // 查看当前 npm 源
+npm config set registry=https://registry.npm.taobao.org     // 切换为 taobao 源
+ npm config set registry=http://registry.npmjs.org          // 切换为 npm 官方源
+```
+
+
+```js
+// 其他指令
+$ npm adduser   // 注册
+    Username: your name
+    Password: your password
+    Email: (this IS public) your email
+$ npm whoami    // 查看当前使用的用户
+$ npm login     // npm登录
+$ npm publish   // NPM-Module-发布
+```
 
 ## 事件循环机制
 
 这个也算是nodejs的整个精髓之所在。
 
+```shell
    ┌───────────────────────────┐
 ┌─>│           timers          │
 │  └─────────────┬─────────────┘
@@ -114,6 +150,7 @@
 │  ┌─────────────┴─────────────┐
 └──┤      close callbacks      │
    └───────────────────────────┘
+```
 
 以下是摘抄与官方的一句原话：
 
