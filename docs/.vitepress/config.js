@@ -38,6 +38,7 @@ export default defineConfig({
         searchMaxSuggestions: 10,
         nav: [
             {text: '🏠 首页', link: '/'},
+            {text: '学习go的经历', link: '/service/go/study/index'},
             {text: '码上行动', link: '/home/home'},
             {text: '编辑器快捷键', link: '/IDEShortcutKey/WebStorm'},
             // { text: 'npm包备注', link: '/npmPackage/index' },
