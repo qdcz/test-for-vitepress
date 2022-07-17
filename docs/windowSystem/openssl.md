@@ -79,7 +79,13 @@ SHA家族的五个算法，分别是SHA-1、SHA-224、SHA-256、SHA-384，和SHA
 
 **[算法原理](https://blog.csdn.net/qq_51473302/article/details/124851177)**
 
+## 混合加密
+因为对称加密速度快，但很难保证密钥传输的安全性，非对称加密加解最大的优点是事先不需要传输密钥，但速度慢，因此实际应用中，经常采取混合密码体制。
+即同时使用对称密码和非对称密码的体制。假如A要向B传输数据，工作过程如下：
 
+1. A选取一个随机数，做为对称加密的密钥，即会话密钥；
+2. A用上面的会话密钥加密通信内容，再用B的公钥加密会话密钥后，一并发送给B;
+3. B收到数据后，先用自己的私钥解密出会话密钥，然后用会话密钥解密出通信内容。
 
 ## 数字签名
 
@@ -176,3 +182,162 @@ Error: error:25078067:DSO support routines:win32_load:could not load the shared 
 ```
 
 ## 数字证书
+
+由CA颁发给网站的身份证书，里面包含了该网站的公钥，有效时间，网站的地址，CA的数字签名等。
+所谓的CA数字签名，实际上就是使用了CA的私钥将网站的公钥等信息进行了签名，当客户端请求服务器的时候，网站会把证书发给客户端，客户端首先可以通过CA的数字签名校验CA的身份，也能证明证书的真实完整性（之前说了，数字签名拥有证明身份和防篡改的功能）。
+
+客户端有没有可能到一个假冒的CA去校验数字证书呢？不太可能，因为CA的地址是内嵌在浏览器中的，很难被篡改。
+
+## ctypro模块
+
+### [Hash算法]代码示例
+
+```js
+const crypto = require('crypto')
+const hash = crypto.createHash('md5')
+
+// 指定要摘要的原始内容,可以在摘要被输出之前使用多次update方法来添加摘要内容
+hash.update('Hello, world!');
+hash.update('Hello, nodejs!');
+let val = hash.digest('hex');
+console.log(val)
+```
+
+### [Hmac算法（加盐）]代码示例
+```js
+const crypto = require('crypto');
+const hmac = crypto.createHmac('sha256', 'secret-key');
+hmac.update('Hello, world!');
+hmac.update('Hello, nodejs!');
+let val = hmac.digest('hex')
+console.log(val)
+```
+
+### [AES算法(对称加密)]代码示例
+
+```js
+var crypto = require('crypto');
+//加密
+function encrypt(str,secret){
+    var cipher = crypto.createCipher('aes192',secret);  //
+    var enc = cipher.update(str,'utf8','hex');
+    enc += cipher.final('hex');
+    return enc;
+}
+
+//解密
+function decrypt(str,secret){
+    var decipher = crypto.createDecipher('aes192',secret);
+    var dec = decipher.update(str,'hex','utf8');
+    dec += decipher.final('utf8');
+    return dec;
+}
+
+var data = 'Hello, this is a secret message!'
+var key = 'Password!'
+var encrypted = encrypt(data, key)
+var decrypted = decrypt(encrypted, key)
+
+console.log('Plain text: ' + data)
+console.log('Encrypted text: ' + encrypted)
+console.log('Decrypted text: ' + decrypted)
+```
+
+### [RSA算法(非对称加密)]代码示例
+
+```js
+const fs = require('fs'), 
+      crypto = require('crypto');
+
+// 从文件加载key:
+function loadKey(file) {
+    // key实际上就是PEM编码的字符串:
+    return fs.readFileSync(file, 'utf8');
+}
+
+let
+    prvKey = loadKey('./rsa-prv.pem'),
+    pubKey = loadKey('./rsa-pub.pem'),
+    message = 'Hello, world!';
+
+// 使用私钥加密:
+let enc_by_prv = crypto.privateEncrypt(prvKey, Buffer.from(message, 'utf8'));
+console.log('encrypted by private key: ' + enc_by_prv.toString('hex'));
+
+// 使用公钥解密
+let dec_by_pub = crypto.publicDecrypt(pubKey, enc_by_prv);
+console.log('decrypted by public key: ' + dec_by_pub.toString('utf8'));
+
+// 使用公钥加密:
+let enc_by_pub = crypto.publicEncrypt(pubKey, Buffer.from(message, 'utf8'));
+console.log('encrypted by public key: ' + enc_by_pub.toString('hex'));
+
+// 使用私钥解密:
+let dec_by_prv = crypto.privateDecrypt(prvKey, enc_by_pub);
+console.log('decrypted by private key: ' + dec_by_prv.toString('utf8'));
+```
+通过输出结果，我们可以看出，无论是私钥加密，公钥解密，还是公钥加密，私钥解密，解密后的消息都与原始消息相同。
+
+### 数字签名-代码示例
+
+如上 ：数字签名
+
+### 椭圆曲线签名
+
+椭圆曲线加密算法，即：Elliptic Curve Cryptography，简称ECC，是基于椭圆曲线数学理论实现的一种非对称加密算法。
+相比RSA，ECC优势是可以使用更短的密钥，来实现与RSA相当或更高的安全。
+
+原理
+椭圆曲线加解密原理：
+公开密钥算法总是要基于一个数学上的难题。比如RSA依据的是：给定两个素数p、q 很容易相乘得到n，而对n进行因式分解却相对困难。
+那椭圆曲线上有什么难题呢？考虑如下等式：
+
+K=kG [其中K,G为Ep(a,b)上的点，k为小于n（n是点G的阶）的整数]
+
+给定k和G，根据加法法则，计算K很容易；但给定K和G，求k就相对困难了。这就是椭圆曲线加密算法采用的难题。
+
+我们把点G称为基点（base point），k（k<n，n为基点G的阶）称为私有密钥（privte key），K称为公开密钥（public key)。
+
+k = 2，K为G的2倍点;
+k = 3，K为G的3倍点;
+k = 4，K为G的4倍点;
+…
+
+如果给定椭圆曲线上K为G的一个倍点，如何计算K为G的多少倍？
+直观上理解，正向计算一个倍点是容易的，反向计算一个点K是G的几倍点则困难的多。
+因此在椭圆曲线算法中，将倍数k做为私钥，将K做为公钥。
+
+椭圆曲线数字签名原理:椭圆曲线数字签名算法（ECDSA）是使用椭圆曲线密码（ECC）对数字签名算法（DSA）的模拟。
+
+secp256k1曲线
+比特币使用椭圆曲线算法生成公钥和私钥，选择的是secp256k1曲线。
+具体使用过程是，先随机生成一个私钥，然后通过椭圆曲线加密算法（ECC）得到一个公钥，然后再使用椭圆曲线签名算法（ECDSA）和私钥结合进行签名
+
+```js
+const { randomBytes } = require('crypto');
+const secp256k1 = require('secp256k1');
+const ecdsa = require('ecdsa');
+
+// 随机生成一个数, 作为通信内容
+const data = randomBytes(32);
+console.log(data);
+
+// 随机产生一个私钥
+let privKey
+do {
+  privKey = randomBytes(32);
+  console.log(privKey);
+} while (!secp256k1.privateKeyVerify(privKey));
+
+// 根据私钥导出公钥
+const pubKey = secp256k1.publicKeyCreate(privKey);
+console.log(pubKey);
+
+// 签名
+const signature = ecdsa.sign(data, privKey);
+console.log(sig);
+
+// 验签
+console.log(ecdsa.verify(data, signature, pubKey));//核查签名是否正确
+// => true
+```
