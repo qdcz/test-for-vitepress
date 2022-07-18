@@ -37,4 +37,8 @@
 ### linux
 [openssl](http://slproweb.com/index.html)
 
+### kafka
+
+[kafka驱动](https://cwiki.apache.org/confluence/display/KAFKA/Clients#Clients-Node.js)
+
 
