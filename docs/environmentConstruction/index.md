@@ -7,3 +7,6 @@
 [centos7环境mongodb离线安装](./mongodb离线安装.md)
 
 [centos7环境nginx离线安装](./nginx.md)  
+
+[window下安装kafka](./kafka.md)
+
