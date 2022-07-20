@@ -1,1 +1,0 @@
-import{_ as n,c as s,o as a,a as t}from"./app.71728ad2.js";const f='{"title":"log4js\u5305\u7528\u6CD5","description":"","frontmatter":{},"headers":[],"relativePath":"npmPackage/log4js.md","lastUpdated":1655275801019}',p={},e=t("",1),o=[e];function c(l,r,i,u,k,g){return a(),s("div",null,o)}var m=n(p,[["render",c]]);export{f as __pageData,m as default};

@@ -1,10 +1,6 @@
 
 ## 工作
 
-[工作日报](./work/day_work_report.md)
-
-[工作周报](./work/weekly_work_report.md)
-
 [今日计划](./work/todayPlan.md)
 
 ## 记一次关于记录websocket鉴权问题
