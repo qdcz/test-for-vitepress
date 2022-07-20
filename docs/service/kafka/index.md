@@ -40,6 +40,15 @@ Zookeerper：管理多个 Kafka 节点，具有管理集群配置的功能
 
 ## topic 主题
 
+## 生产者
+
+创建一个生成者 并生产数据
+
+
+
+## 消费者
+
+
 
 
 
@@ -53,4 +62,26 @@ bin\windows\kafka-topics.sh --create --bootstrap-server localhost:9092 --replica
 ### 查看当前的主题列表
 ```shell
 bin\windows\kafka-topics.bat --list --bootstrap-server localhost:9092
+```
+
+### 查询指定topic的信息
+
+```shell
+bin\windows\kafka-topics.bat --bootstrap-server 127.0.0.1:9092 --topic dadada --describe
+
+
+# 以下是打印信息
+Topic: dadada   TopicId: 6Vhqu704THiGT4GK_YNLXQ PartitionCount: 1       ReplicationFactor: 1    Configs: segment.bytes=1073741824
+    Topic: dadada   Partition: 0    Leader: 0       Replicas: 0     Isr: 0
+```
+
+### 执行消费条数的数据
+
+```shell
+# 0.8版本及以下的的kafka 使用如下命令test topic中的数据
+./kafka-console-consumer.sh  --zookeeper localhost:2181 --topic test
+# 指定消费10条数据
+bin\windows\kafka-console-consumer.bat  --bootstrap-server localhost:9092 --topic dadada --max-messages 10
+# 0.9版本及以上的kafka建议使用如下命令进行消费，当然也可使用上一条命令消费
+./kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic test
 ```

@@ -32,6 +32,8 @@
 
 [nestJs](../service/NodeJs/index.md)
 
+[kafka](../service/kafka/index.md)
+
 
 
 

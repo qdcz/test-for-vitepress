@@ -41,4 +41,8 @@
 
 [kafka驱动](https://cwiki.apache.org/confluence/display/KAFKA/Clients#Clients-Node.js)
 
+### mysql
+
+[mysql驱动](https://github.com/mysqljs/mysql)
+
 
